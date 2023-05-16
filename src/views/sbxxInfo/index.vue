@@ -228,4 +228,7 @@ onMounted(() => {
   .van-cell {
     height: 65px;
   }
-}</style>
+  
+}
+
+</style>

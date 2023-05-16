@@ -20,8 +20,8 @@ const lists = ref([
 //点击设备详情
 const sbxq=(i)=>{ 
   console.log(i);
-  // router.push('/sbxxList')
-  router.push('/sbxxInfo')
+  router.push('/sbxxList')
+  // router.push('/sbxxInfo')
 }
 </script>
 

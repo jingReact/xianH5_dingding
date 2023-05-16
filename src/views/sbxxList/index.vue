@@ -1,9 +1,11 @@
 <script setup lang="ts">
 // import list from './components/list.vue'
-import { reactive, ref } from 'vue'
+import { reactive, ref ,onMounted} from 'vue'
 import { useRouter } from 'vue-router'
 import SvgIcon from '@/components/svgIcon'
 import getAssetsFile from '../../utils/pub-use'
+import { siteCont } from '@/api/home'
+
 const router = useRouter()
 let params = reactive({
   keyword: '',
@@ -27,18 +29,28 @@ const sbxq = (i) => {
   console.log(i);
   router.push('/sbxxList')
 }
+//设备信息接口
+let listData=ref()
+let  siteContMth=async (p:any)=>{ 
+    let {code,data}=await siteCont(p)
+    console.log(code,data);
+    listData.value=data
+}
+onMounted(() => {
+  siteContMth()
+})
 </script>
 <template>
   <div class="app-container">
     <van-row gutter="20">
-      <van-col v-for="i in lists" span="12" @click="sbxq(i)">
+      <van-col v-for="i,index in listData" span="12" @click="sbxq(i)">
         <van-card>
           <template #thumb>
             <div class="card">
-              <img :src="getAssetsFile(i.img)" />
+              <img :src="getAssetsFile(lists[index].img)" />
             <div style="margin-left: 10px;">
-              <div>121</div>
-              <div >{{ i.projectName }}</div>
+              <div>{{ i.countNum }}</div>
+              <div class="typeClass">{{ i.typeName }}</div>
               </div>
             </div>
           </template>
@@ -55,7 +67,10 @@ const sbxq = (i) => {
   .search {
     height: 100px;
   }
-
+  .typeClass{ 
+    width: 80%;
+    overflow: hidden;
+  }
   .van-search {
     padding: 12px 16px 0;
     position: fixed;
