@@ -17,7 +17,7 @@ import {
   Grid,
   GridItem ,
   Image ,
-  Col, Row ,Card , Cell, Icon ,Picker ,Popup 
+  Col, Row ,Card , Cell, Icon ,Picker ,Popup , Loading 
 } from "vant";
 
 export default {
@@ -39,5 +39,5 @@ export default {
   Grid,
   GridItem ,
   Image ,
-  Col, Row ,Card ,Icon ,Picker ,Popup 
+  Col, Row ,Card ,Icon ,Picker ,Popup , Loading 
 };

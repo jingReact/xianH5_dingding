@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import LabelSelect from './components/labelSelect.vue'
-// import list from './components/list.vue'
-import { reactive, ref} from 'vue'
-import {useRouter} from 'vue-router'
+import { reactive, ref,onMounted} from 'vue'
+import {useRouter,useRoute} from 'vue-router'
 import SvgIcon from '@/components/svgIcon'
+import { siteList } from '@/api/home'
+
 const router=useRouter()
+const {query}=useRoute()
 let params = reactive({
   keyword: '',
   sortBy: '',
@@ -12,17 +14,23 @@ let params = reactive({
   isMobile: true,
 })
 const lists = ref([
-  { 'projectName': '站点名称', zxzt: '在线', icon: '', zt: 1 },
-  { 'projectName': '站点名称', zxzt: '在线', icon: '', zt: 0 },
-  { 'projectName': '站点名称', zxzt: '在线', icon: '', zt: 1 },
-  { 'projectName': '站点名称', zxzt: '在线', icon: '', zt: 0 },
 ]);
 //点击设备详情
 const sbxq=(i)=>{ 
   console.log(i);
-  router.push('/sbxxList')
-  // router.push('/sbxxInfo')
+  // router.push('/sbxxList')
+  router.push({path:'/sbxxInfo',query:i})
 }
+//获取设备列表
+const siteListMt=async (p:string)=>{ 
+  let {data}=await siteList(p)
+  console.log(data);
+  lists.value=data
+}
+onMounted(()=>{ 
+  console.log(query,7788);
+  siteListMt({typeId:query.typeId})
+})
 </script>
 
 <template>
@@ -40,9 +48,9 @@ const sbxq=(i)=>{
           <template #thumb>
             <div class="card">
               <img src="../../assets/images/zhandian.png" />
-              <span>站点名称</span>
+              <span>{{ i.siteName }}</span>
             </div>
-            <div v-if="i.zt == 1" class="status"><img style="width: 10px;" src="../../assets/images/sbzx.png" />在线</div>
+            <div v-if="i.siteStatus == 1" class="status"><img style="width: 10px;" src="../../assets/images/sbzx.png" />正常</div>
             <div v-else class="status" style="color: #8a8a8a;"><img style="width: 10px;"
                 src="../../assets/images/sblx.png" />离线</div>
           </template>

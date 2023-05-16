@@ -26,8 +26,7 @@ const lists = ref([
 ]);
 //点击设备详情
 const sbxq = (i) => {
-  console.log(i);
-  router.push('/sbxxList')
+  router.push({path:'/sbxx',query:i})
 }
 //设备信息接口
 let listData=ref()
@@ -42,34 +41,42 @@ onMounted(() => {
 </script>
 <template>
   <div class="app-container">
-    <van-row gutter="20">
-      <van-col v-for="i,index in listData" span="12" @click="sbxq(i)">
-        <van-card>
-          <template #thumb>
-            <div class="card">
+  <van-row gutter="20"> 
+      <van-col v-for="i,index in listData" :span="12"  @click="sbxq(i)"> 
+     <van-card> 
+          <template #thumb> 
+            <div class="card" >
               <img :src="getAssetsFile(lists[index].img)" />
             <div style="margin-left: 10px;">
               <div>{{ i.countNum }}</div>
               <div class="typeClass">{{ i.typeName }}</div>
               </div>
             </div>
-          </template>
-        </van-card>
-      </van-col>
-    </van-row>
+         </template> 
+       </van-card> 
+     </van-col> 
+   </van-row> 
   </div>
 </template>
 
 <style lang="scss" scoped>
 .app-container {
+  // background: red;
+  // width: 100px;
   padding: 0 10px;
 
   .search {
     height: 100px;
   }
   .typeClass{ 
-    width: 80%;
-    overflow: hidden;
+          width: 80px;
+					font-family: PingFang SC;
+					font-weight: 500;
+					color: #7B7B7E;
+					white-space: nowrap;
+					overflow: auto;
+					text-align: left;
+          font-size: 15px;
   }
   .van-search {
     padding: 12px 16px 0;
@@ -122,7 +129,7 @@ onMounted(() => {
   align-items: center;
   font-weight: bold;
   margin-top: 20px;
-  width: 330px;
+  // width: 330px;
 }
 
 .status {

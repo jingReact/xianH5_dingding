@@ -1,30 +1,32 @@
 <script setup lang="ts">
 // import list from './components/list.vue'
 import { reactive, ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { getCurrentInstance } from 'vue'
 import * as echarts from 'echarts';
 import SvgIcon from '@/components/svgIcon'
 import getAssetsFile from '../../utils/pub-use'
+import { siteSelect, siteSelectechat,siteInfo } from '@/api/home'
+import { threeDats, nowDats } from "@/utils/time";
 const {
   appContext: {
     config: { globalProperties: { $dd } }
   }
 } = getCurrentInstance()
 const router = useRouter()
-let params = reactive({
-  keyword: '',
-  sortBy: '',
-  type: '',
-  isMobile: true,
-})
+const { query } = useRoute()
 const lists = ref([
   { 'projectName': '氨氮', color: '#4A9FFFFF', img: '/dy.png', bgc: `linear-gradient(0deg, #DEEEFF 0%, #E4F0FF 100%)`, zt: 11, ut: 'mg/L' },
   { 'projectName': '浊度', color: '#F55662FF', img: '/zd.png', zxzt: '在线', bgc: `linear-gradient(0deg, #FFD6D9 0%, #FFF3F4 100%)`, zt: 22, ut: '度' },
   { 'projectName': '流速', color: '#28C37CFF', img: '/sl.png', zxzt: '在线', bgc: `linear-gradient(0deg, #D1FFED 0%, #E8F7F1 100%)`, zt: 12, ut: 'm/s' },
   { 'projectName': '水位', color: '#A591E9FF', img: '/sw.png', zxzt: '在线', bgc: `linear-gradient(0deg, #C8BCF6 0%, #E6E3F4 100%)`, zt: 20, ut: 'm' },
 ]);
-const initMths = () => {
+let loading = ref(true)
+const initMths = (p, m) => {
+  loading.value = false
+  isShow.value=p
+  let xDate = p
+  let yDate = m
   var myChart = echarts.init(document.getElementById('main'));
   // 绘制图表
   myChart.setOption({
@@ -33,118 +35,135 @@ const initMths = () => {
     },
     tooltip: {},
     xAxis: {
-      data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', , '12月']
+      data: xDate
     },
     yAxis: {},
+    dataZoom: [
+      {
+        "height": 14,
+        type: "slider",//slider表示有滑动块的，
+        show: true,
+        xAxisIndex: [0],//表示x轴折叠
+        start: 1,//数据窗口范围的起始百分比,表示1%
+        end: 35,//数据窗口范围的结束百分比,表示35%坐标
+        bottom: "20",
+      },
+    ],
     series: [
       {
-        name: '单位',
+        name: yDate.unit,
         type: 'line',
-        data: [5, 20, 36, 10, 10, 20, 5, 20, 36, 10, 10, 20, 10, 10, 20]
+        data: yDate.valList
       }
     ]
   });
 }
-//点击设备详情
+//点击时间
 const sbxq = (i) => {
-  console.log(i, 21122);
-
   $dd.ready(function () {
     $dd.biz.util.datepicker({
-      format: 'yyyy-MM-dd',//注意：format只支持android系统规范，即2015-03-31格式为yyyy-MM-dd
-      value: '2015-04-17', //默认显示日期
-      onSuccess: function (result) {
+      format: 'yyyy-MM-dd',
+      value: new Date(),
+      onSuccess: ({ value }) => {
+        if (i == 1) {
+          queryParams.value.startTime = value
+        } else {
+          queryParams.value.endTime = value
+        }
+        siteSelectechatM(queryParams.value)
       },
-      onFail: function (err) { }
+      onFail: (err) => { }
     })
-
-    //     $dd.biz.map.view({
-    // 	latitude: 39.903578,
-    // 	longitude: 116.473565,
-    // 	title: '北京国家广告产业园',
-    // 	onSuccess : function(res) {
-    // 		// 调用成功时回调
-    // 		console.log(res)
-    // 	},
-    // 	onFail : function(err) {
-    // 		// 调用失败时回调
-    // 		console.log(err)
-    // 	}
-    // });
   });
 }
-// const onClickLeft = () => {
-//   router.go(-1)
-// }
-// dd.ready(function() {
-// });
+let queryParams: object = ref({ siteId: query.siteId, codeAscii: '', startTime: nowDats(), endTime: threeDats() })
 //切换 下方位置
-let selectedValues = ref(['ad'])
-const columns = [
-  { text: '氨氮', value: 'ad' },
-  { text: '浊度', value: 'zd' },
-  { text: '流速', value: 'ls' },
-  { text: '水位', value: 'sw' },
-];
-const fieldValue = ref('氨氮');
+const columns = ref([]);
+const fieldValue = ref();
 const showPicker = ref(false);
-
-const onConfirm = ({ selectedOptions }) => {
+const onConfirm = ({ text, value }) => {
   showPicker.value = false;
-  fieldValue.value = selectedOptions[0].text;
+  fieldValue.value = text
+  queryParams.value.codeAscii = value
+  siteSelectechatM(queryParams.value)
 };
+//获取下拉因子列表
+const siteSelectM = async (p: string) => {
+  let { data } = await siteSelect(p)
+  console.log(data);
+  data.forEach(i => {
+    columns.value.push({ text: i.name, value: i.codeAscll })
+  });
+  let ar = data[0]
+  fieldValue.value = ar.name
+  queryParams.value.codeAscii = ar.codeAscll
+  siteSelectechatM(queryParams.value)
+}
+//获取下拉因子列表echarts
+let isShow=ref([])
+const siteSelectechatM = async (p: object) => {
+  loading.value = true
+  let { data: { timeList, dataList }, code } = await siteSelectechat(p)
+  if (code == 200) {
+    initMths(timeList, dataList)
+  }
+}
+//获取站点信息
+let  projectInfo=ref({})
+const siteInfoM = async (p:string) => {
+  loading.value = true
+  let { data, code } = await siteInfo(p)
+  if (code == 200) {
+    projectInfo.value=data
+    console.log(projectInfo,888);
+  }
+}
 onMounted(() => {
-  initMths()
+  siteSelectM(query.siteId)
+  siteInfoM(query.siteId)
 })
 </script>
 <template>
   <div class="app-container">
-    <!-- <van-nav-bar
-      title="站点名称"
-      left-text="返回"
-      left-arrow
-      @click-left="onClickLeft"
-    /> -->
-
     <van-cell-group>
-      <van-cell title="站点地址" value="我是站点地址我是站点地址" />
+      <van-cell title="站点地址"  :value="projectInfo.siteAddress" />
     </van-cell-group>
     <van-cell-group>
       <van-cell title="站点状态">
         <template #right-icon>
-          <div style="color: #28C37CFF;">在线</div>
+          <div v-if="projectInfo.siteStatus==1" style="color: #28C37CFF;">在线</div>
+          <div v-else style="color: #dfdedf;">离线</div>
         </template>
       </van-cell>
     </van-cell-group>
     <van-row gutter="20">
-      <van-col v-for="i in lists" span="12" @click="sbxq(i)">
+      <van-col v-for="i in lists" span="12">
         <van-card :style="{ 'background': i.bgc, 'color': i.color }">
           <template #thumb>
             <div class="card">
-              <img :src="getAssetsFile(i.img)" />
+              <img style="padding: 0 3px;" :src="getAssetsFile(i.img)" />
               <div style="margin-left: 10px;">
                 <div>{{ i.projectName }}</div>
                 <div>{{ i.zt }} <span style="font-size: 11px;">{{ i.ut }}</span></div>
-
               </div>
             </div>
           </template>
         </van-card>
       </van-col>
     </van-row>
-    <!-- 搜索列 -->
     <van-field v-model="fieldValue" is-link readonly label="类型" placeholder="选择站点类型" @click="showPicker = true" />
     <van-popup v-model:show="showPicker" round position="bottom">
       <van-picker :columns="columns" @cancel="showPicker = false" @confirm="onConfirm" />
     </van-popup>
     <van-cell-group class="time">
-      <van-cell title="开始时间" is-link label="2020-04-14 00:00:00" @click="sbxq" />
+      <van-cell title="开始时间" is-link :label="queryParams.startTime" @click="sbxq(1)" />
     </van-cell-group>
     <van-cell-group class="time">
-      <van-cell title="结束时间" is-link label="2020-04-14 00:00:00" @click="sbxq" />
+      <van-cell title="结束时间" is-link :label="queryParams.endTime" @click="sbxq(2)" />
     </van-cell-group>
-
-    <div id="main" style="width: 400px ;height: 240px;"></div>
+    <van-loading style="text-align: center;line-height: 150px;" size="24px" v-show="loading">加载中...</van-loading>
+    <div v-show="!loading &&isShow.length>0 "  id="main" style="width: 400px ;height: 240px;"></div>
+    <div v-show="loading ||isShow.length==0" style="width: 400px;color: #dfdedf ;height: 240px;text-align: center;font-size: 14px;line-height: 200px;">暂无数据</div>
   </div>
 </template>
 
@@ -177,6 +196,7 @@ onMounted(() => {
       }
     }
   }
+
   :deep(.van-tabs) {
     .van-tabs__wrap {
       position: fixed;
@@ -185,6 +205,7 @@ onMounted(() => {
       height: 44px;
       z-index: 99;
       background-color: #fff;
+
       &::after {
         @include borderZeroPointFive();
       }
@@ -228,7 +249,5 @@ onMounted(() => {
   .van-cell {
     height: 65px;
   }
-  
-}
 
-</style>
+}</style>

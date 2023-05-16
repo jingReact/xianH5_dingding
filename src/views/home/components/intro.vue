@@ -22,12 +22,14 @@ import getAssetsFile from '../../../utils/pub-use'
 const router=useRouter()
 const ulList=reactive([
 // {tittle:'西咸机场海绵系统',com:'/sbxx',bgc:'/dbbj_img.png',atittle:''},
-{tittle:'设备信息',com:'/sbxx',bgc:'/sbxx_img.png',atittle:'Equipment'},
+{tittle:'设备信息',com:'/sbxxList',bgc:'/sbxx_img.png',atittle:'Equipment'},
 {tittle:'报警预警信息',com:'/bjxx',bgc:'/bjyjxx_img.png',atittle:'Alarm warning'},
 {tittle:'监测数据查询',com:'/jcshcx',bgc:'/jcsjcx_img.png',atittle:'Monitor data'}])
 const routerClick=(i)=>{ 
-  console.log(i,33);
+  // console.log(i,33);
   router.push(i)
+  // router.push('/sbxxList')
+
 }
  </script>
 <style lang="scss" scoped>
