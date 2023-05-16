@@ -1,19 +1,13 @@
 <script setup lang="ts">
 // import list from './components/list.vue'
 import { reactive, ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import {useRoute } from 'vue-router'
 import { getCurrentInstance } from 'vue'
 import * as echarts from 'echarts';
-import SvgIcon from '@/components/svgIcon'
 import getAssetsFile from '../../utils/pub-use'
-import { siteSelect, siteSelectechat,siteInfo } from '@/api/home'
+import { siteSelect, siteSelectechat, siteInfo } from '@/api/home'
 import { threeDats, nowDats } from "@/utils/time";
-const {
-  appContext: {
-    config: { globalProperties: { $dd } }
-  }
-} = getCurrentInstance()
-const router = useRouter()
+const { appContext: { config: { globalProperties: { $dd } }}} = getCurrentInstance()
 const { query } = useRoute()
 const lists = ref([
   { 'projectName': '氨氮', color: '#4A9FFFFF', img: '/dy.png', bgc: `linear-gradient(0deg, #DEEEFF 0%, #E4F0FF 100%)`, zt: 11, ut: 'mg/L' },
@@ -21,10 +15,16 @@ const lists = ref([
   { 'projectName': '流速', color: '#28C37CFF', img: '/sl.png', zxzt: '在线', bgc: `linear-gradient(0deg, #D1FFED 0%, #E8F7F1 100%)`, zt: 12, ut: 'm/s' },
   { 'projectName': '水位', color: '#A591E9FF', img: '/sw.png', zxzt: '在线', bgc: `linear-gradient(0deg, #C8BCF6 0%, #E6E3F4 100%)`, zt: 20, ut: 'm' },
 ]);
-let loading = ref(true)
-const initMths = (p, m) => {
+let loading= ref(true)
+const columns = ref([]);
+const fieldValue = ref();
+const showPicker = ref(false);
+let isShow = ref([])
+let projectInfo = ref({})
+let queryParams= ref({ siteId: query.siteId, codeAscii: '', startTime: nowDats(), endTime: threeDats() })
+const initMths = (p,m) => {
   loading.value = false
-  isShow.value=p
+  isShow.value = p
   let xDate = p
   let yDate = m
   var myChart = echarts.init(document.getElementById('main'));
@@ -76,11 +76,7 @@ const sbxq = (i) => {
     })
   });
 }
-let queryParams: object = ref({ siteId: query.siteId, codeAscii: '', startTime: nowDats(), endTime: threeDats() })
 //切换 下方位置
-const columns = ref([]);
-const fieldValue = ref();
-const showPicker = ref(false);
 const onConfirm = ({ text, value }) => {
   showPicker.value = false;
   fieldValue.value = text
@@ -100,7 +96,6 @@ const siteSelectM = async (p: string) => {
   siteSelectechatM(queryParams.value)
 }
 //获取下拉因子列表echarts
-let isShow=ref([])
 const siteSelectechatM = async (p: object) => {
   loading.value = true
   let { data: { timeList, dataList }, code } = await siteSelectechat(p)
@@ -109,29 +104,62 @@ const siteSelectechatM = async (p: object) => {
   }
 }
 //获取站点信息
-let  projectInfo=ref({})
-const siteInfoM = async (p:string) => {
+const siteInfoM = async (p: string) => {
   loading.value = true
   let { data, code } = await siteInfo(p)
   if (code == 200) {
-    projectInfo.value=data
-    console.log(projectInfo,888);
+    projectInfo.value = data
+    console.log(projectInfo, 888);
   }
 }
 onMounted(() => {
   siteSelectM(query.siteId)
   siteInfoM(query.siteId)
+
+  $dd.ready(function () {
+    $dd.device.geolocation.get({
+    targetAccuracy : 200,
+    coordinate : 1,
+    withReGeocode : true,
+    useCache:true, //默认是true，如果需要频繁获取地理位置，请设置false
+    onSuccess : function(result) {
+        /* 高德坐标 result 结构
+        {
+            longitude : Number,
+            latitude : Number,
+            accuracy : Number,
+            address : String,
+            province : String,
+            city : String,
+            district : String,
+            road : String,
+            netType : String,
+            operatorType : String,
+            locationType：1,
+            errorMessage : String,
+            errorCode : Number,
+            isWifiEnabled : Boolean,
+            isGpsEnabled : Boolean,
+            isFromMock : Boolean,
+            provider : wifi|lbs|gps,
+            isMobileEnabled : Boolean
+        }
+        */
+    },
+    onFail : function(err) {}
+});
+  });
 })
 </script>
 <template>
   <div class="app-container">
     <van-cell-group>
-      <van-cell title="站点地址"  :value="projectInfo.siteAddress" />
+      <van-cell title="站点地址" :value="projectInfo.siteAddress" />
     </van-cell-group>
     <van-cell-group>
       <van-cell title="站点状态">
         <template #right-icon>
-          <div v-if="projectInfo.siteStatus==1" style="color: #28C37CFF;">在线</div>
+          <div v-if="projectInfo.siteStatus == 1" style="color: #28C37CFF;">在线</div>
           <div v-else style="color: #dfdedf;">离线</div>
         </template>
       </van-cell>
@@ -162,8 +190,9 @@ onMounted(() => {
       <van-cell title="结束时间" is-link :label="queryParams.endTime" @click="sbxq(2)" />
     </van-cell-group>
     <van-loading style="text-align: center;line-height: 150px;" size="24px" v-show="loading">加载中...</van-loading>
-    <div v-show="!loading &&isShow.length>0 "  id="main" style="width: 400px ;height: 240px;"></div>
-    <div v-show="loading ||isShow.length==0" style="width: 400px;color: #dfdedf ;height: 240px;text-align: center;font-size: 14px;line-height: 200px;">暂无数据</div>
+    <div v-show="!loading && isShow.length > 0" id="main" style="width: 400px ;height: 240px;"></div>
+    <div v-show="loading || isShow.length == 0"
+      style="width: 400px;color: #dfdedf ;height: 240px;text-align: center;font-size: 14px;line-height: 200px;">暂无数据</div>
   </div>
 </template>
 
@@ -250,4 +279,5 @@ onMounted(() => {
     height: 65px;
   }
 
-}</style>
+}
+</style>

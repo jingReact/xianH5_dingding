@@ -9,8 +9,8 @@ import { apiGetBlogDetail } from '@/api/home'
 import { initDingH5RemoteDebug } from "dingtalk-h5-remote-debug";
 initDingH5RemoteDebug();
 const apiGetBlogDetailM = async (p) => {
-      let { code, data } = await apiGetBlogDetail(p)
-      dd.config({
+    let { code, data } = await apiGetBlogDetail(p)
+    dd.config({
         agentId: '', // 必填，微应用ID
         corpId: '',//必填，企业ID
         timeStamp: '', // 必填，生成签名的时间戳
@@ -18,22 +18,22 @@ const apiGetBlogDetailM = async (p) => {
         signature: '', // 必填，签名
         type: 0 / 1,   //选填。0表示微应用的jsapi,1表示服务窗的jsapi；不填默认为0。该参数从dingtalk.js的0.8.3版本开始支持
         jsApiList: [
-          'runtime.info',
-          'biz.contact.choose',
-          'device.notification.confirm',
-          'device.notification.alert',
-          'device.notification.prompt',
-          'biz.ding.post',
-          'biz.util.openLink',
-          'runtime.permission.requestOperateAuthCode'
+            'runtime.info',
+            'biz.contact.choose',
+            'device.notification.confirm',
+            'device.notification.alert',
+            'device.notification.prompt',
+            'biz.ding.post',
+            'biz.util.openLink',
+            'runtime.permission.requestOperateAuthCode'
         ], // 必填，需要使用的jsapi列表，注意：不要带dd。
         ...data
-      });
-     
-    }
-    apiGetBlogDetailM(location.href)
+    });
+
+}
+apiGetBlogDetailM(location.href)
 const app = createApp(App);
- app.config.warnHandler = () => null
+app.config.warnHandler = () => null
 app.config.globalProperties.$dd = dd
 // 按需注入vant组件
 // console.log(initDingH5RemoteDebug(),882222228);
