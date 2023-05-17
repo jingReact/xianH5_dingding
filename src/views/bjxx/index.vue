@@ -1,85 +1,24 @@
 <script setup lang="ts">
-// import list from './components/list.vue'
 import { reactive, ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { getCurrentInstance } from 'vue'
-import * as echarts from 'echarts';
-import getAssetsFile from '../../utils/pub-use'
-import { sitelistselect, siteSelectechat, siteInfo } from '@/api/home'
-import { threeDats, nowDats } from "@/utils/time";
-const { appContext: { config: { globalProperties: { $dd } } } } = getCurrentInstance()
-const { query } = useRoute()
+import { useRouter, useRoute } from 'vue-router'
+import { sitelistselect, siteInfo, alarmWarningCont, alarmWarningList } from '@/api/home'
 const lists = ref([
   { 'projectName': '报警', color: '#FFFFFFFF', bgc: `linear-gradient(90deg, #FF6363 0%, #FFACAD 100%)`, zt: 11, tow: '报警中', three: '已失效' },
+]);
+const lists1 = ref([
   { 'projectName': '预警', color: '#FFFFFFFF', zxzt: '在线', bgc: `linear-gradient(90deg, #FFA071 0%, #FFC3A5 100%)`, zt: 22, tow: '预警中', three: '已失效' },
 ]);
+const router = useRouter()
 let loading = ref(true)
 const columns = ref([]);
 const fieldValue = ref();
 const showPicker = ref(false);
-let isShow = ref([])
-let projectInfo = ref({})
-let queryParams = ref({ siteId: query.siteId, codeAscii: '', startTime: nowDats(), endTime: threeDats() })
-const initMths = (p, m) => {
-  loading.value = false
-  isShow.value = p
-  let xDate = p
-  let yDate = m
-  var myChart = echarts.init(document.getElementById('main'));
-  // 绘制图表
-  myChart.setOption({
-    title: {
-      // text: 'ECharts 入门示例'
-    },
-    tooltip: {},
-    xAxis: {
-      data: xDate
-    },
-    yAxis: {},
-    dataZoom: [
-      {
-        "height": 14,
-        type: "slider",//slider表示有滑动块的，
-        show: true,
-        xAxisIndex: [0],//表示x轴折叠
-        start: 1,//数据窗口范围的起始百分比,表示1%
-        end: 35,//数据窗口范围的结束百分比,表示35%坐标
-        bottom: "20",
-      },
-    ],
-    series: [
-      {
-        name: yDate.unit,
-        type: 'line',
-        data: yDate.valList
-      }
-    ]
-  });
-}
-//点击时间
-// const sbxq = (i) => {
-//   $dd.ready(function () {
-//     $dd.biz.util.datepicker({
-//       format: 'yyyy-MM-dd',
-//       value: new Date(),
-//       onSuccess: ({ value }) => {
-//         if (i == 1) {
-//           queryParams.value.startTime = value
-//         } else {
-//           queryParams.value.endTime = value
-//         }
-//         siteSelectechatM(queryParams.value)
-//       },
-//       onFail: (err) => { }
-//     })
-//   });
-// }
 //切换 下方位置
 const onConfirm = ({ text, value }) => {
   showPicker.value = false;
   fieldValue.value = text
-  queryParams.value.codeAscii = value
-  siteSelectechatM(queryParams.value)
+  ListParams.value.siteId=value
+  alarmWarningListM()
 };
 //获取下拉因子列表
 const siteSelectM = async (p: string) => {
@@ -90,70 +29,63 @@ const siteSelectM = async (p: string) => {
   });
   let ar = data[0]
   fieldValue.value = ar.name
-  queryParams.value.codeAscii = ar.id
-  siteSelectechatM(queryParams.value)
 }
-//获取下拉因子列表echarts
-const siteSelectechatM = async (p: object) => {
-  loading.value = true
-  let { data: { timeList, dataList }, code } = await siteSelectechat(p)
-  if (code == 200) {
-    initMths(timeList, dataList)
-  }
-}
-//获取站点信息
-const siteInfoM = async (p: string) => {
-  loading.value = true
-  let { data, code } = await siteInfo(p)
-  if (code == 200) {
-    projectInfo.value = data
-    console.log(projectInfo, 888);
-  }
-}
-let liShow = ref()
+let liShow = ref(1)
 function liClick(c) {
   liShow.value = c
-  console.log(c, 666);
+  ListParams.value.type = c
+  alarmWarningListM()
+}
+//查询统计报警预警数据总数信息
+let WarningCont = ref({})
+const alarmWarningContM = async (p: string) => {
+  let { data, code } = await alarmWarningCont(p)
+  if (code == 200) {
+    WarningCont.value = data
+    console.log(WarningCont, 'WarningCont');
+  }
+}
+let WarningList = ref([])
+let ListParams = ref({siteId:'', pageNum: 1, pageSize: 10, type: 1, loading: true, finished: false, isLoading: false })
+const alarmWarningListM = async (isRefresh) => {
+  let { data, code,total } = await alarmWarningList(ListParams.value)
+  if (code == 200) {
+    WarningList.value = data
+    if (isRefresh) {//下拉刷新
+      WarningList.value = [...data, ...WarningList.value]
+      ListParams.value.isLoading = false
+    } else {//上拉加载
+      if(total<  WarningList.value.length){ 
+        WarningList.value = [...WarningList.value, ...data]
+        ListParams.value.loading = false
+      }else{ 
+        ListParams.value.finished = true
+      }
+    }
+    if (data.length === 0) {// 证明没有下一页数据了
+      ListParams.value.finished = true
+    }
+  }
+}
+// 上拉加载
+function onLoad() {
+  ListParams.value.pageNum++
+  alarmWarningListM()
+}
+// 下拉刷新
+function onRefresh() {
+  ListParams.value.pageNum++
+  alarmWarningListM()
+}
+function infoClick(i){ 
+  console.log(i,444);
+  router.push({ path: '/bjxxInfo', query: i })
+
 }
 onMounted(() => {
-  siteSelectM(query.siteId)
-  siteInfoM(query.siteId)
-
-  $dd.ready(function () {
-    $dd.device.geolocation.get({
-      targetAccuracy: 200,
-      coordinate: 1,
-      withReGeocode: true,
-      useCache: true, //默认是true，如果需要频繁获取地理位置，请设置false
-      onSuccess: function (result) {
-        /* 高德坐标 result 结构
-        {
-            longitude : Number,
-            latitude : Number,
-            accuracy : Number,
-            address : String,
-            province : String,
-            city : String,
-            district : String,
-            road : String,
-            netType : String,
-            operatorType : String,
-            locationType：1,
-            errorMessage : String,
-            errorCode : Number,
-            isWifiEnabled : Boolean,
-            isGpsEnabled : Boolean,
-            isFromMock : Boolean,
-            provider : wifi|lbs|gps,
-            isMobileEnabled : Boolean
-        }
-        */
-      },
-      onFail: function (err) { }
-    });
-  });
+  siteSelectM()
+  alarmWarningContM()
 })
-
 </script>
 <template>
   <div class="app-container">
@@ -163,16 +95,39 @@ onMounted(() => {
           <template #thumb>
             <div class="card">
               <div style="margin-left: 10px;" class="one">
-                <div>{{ i.zt }} </div>
+                <div>{{ WarningCont.alarmNum }} </div>
                 <div>{{ i.projectName }}</div>
               </div>
               <div class="one">
-                <div>{{ i.zt }} </div>
+                <div>{{ WarningCont.alarmingNum }} </div>
                 <div>{{ i.tow }}</div>
               </div>
 
               <div class="one">
-                <div>{{ i.zt }} </div>
+                <div>{{ WarningCont.alarmExpireNum }} </div>
+                <div>{{ i.three }}</div>
+              </div>
+            </div>
+          </template>
+        </van-card>
+      </van-col>
+    </van-row>
+    <van-row gutter="20">
+      <van-col v-for="i in lists1" span="24">
+        <van-card :style="{ 'background': i.bgc, 'color': i.color }">
+          <template #thumb>
+            <div class="card">
+              <div style="margin-left: 10px;" class="one">
+                <div>{{ WarningCont.warnNum }} </div>
+                <div>{{ i.projectName }}</div>
+              </div>
+              <div class="one">
+                <div>{{ WarningCont.warningNum }} </div>
+                <div>{{ i.tow }}</div>
+              </div>
+
+              <div class="one">
+                <div>{{ WarningCont.warnExpireNum }} </div>
                 <div>{{ i.three }}</div>
               </div>
             </div>
@@ -188,76 +143,49 @@ onMounted(() => {
     <van-popup v-model:show="showPicker" round position="bottom">
       <van-picker :columns="columns" @cancel="showPicker = false" @confirm="onConfirm" />
     </van-popup>
-  <van-cell-group>
-    <van-cell value="报警中">
-  <template #title>
-    <van-tag type="primary">标签</van-tag>
-    <span class="custom-title">单元格</span>
-  </template>
-</van-cell>
-</van-cell-group>
-
-    
-    <!-- <van-loading style="text-align: center;line-height: 150px;" size="24px" v-show="loading">加载中...</van-loading>
-    <div v-show="!loading && isShow.length > 0" id="main" style="width: 400px ;height: 240px;"></div>
-    <div v-show="loading || isShow.length == 0"
-      style="width: 400px;color: #dfdedf ;height: 240px;text-align: center;font-size: 14px;line-height: 200px;">暂无数据</div> -->
+    <van-pull-refresh v-model="ListParams.isLoading" :disabled="ListParams.finished" @refresh="onRefresh">
+      <van-list v-model="loading" :finished="ListParams.finished" finished-text="没有更多了" @load="onLoad">
+        <div class="bjswxx" :class="{ 'bgc': i.warningState == 1 }" v-for="i in WarningList" @click="infoClick(i)">
+          <div class="one" :class="{ 'bgc1': i.warningState == 1 }">
+            <div class="zd">
+              <img src="../../assets/home/bjyj2.png" alt="">
+              <div class="bold">{{ i.siteName }}</div>
+              <div class="bold">{{ i.tt }}</div>
+            </div>
+            <span class="bjz" :style="{ 'color': i.warningState == 1 ? '#FF6E6EFF' : '#666666FF' }">
+              {{ i.warningState == 1 ? '报警中' : '已失效' }}
+            </span>
+          </div>
+          <div class="two">
+            <div class="zd">
+              <div>报警因子</div>
+              <div class="bold">{{ i.codeProperty }}</div>
+              <div>{{ i.currentValue }}</div>
+              <div class="bold">1.6m</div>
+            </div>
+          </div>
+        </div>
+      </van-list>
+    </van-pull-refresh>
   </div>
 </template>
-
 <style lang="scss" scoped>
+.van-pull-refresh {
+    overflow-y: scroll;
+    height: 400px;
+}
 .app-container {
   padding: 0 10px;
-
   .search {
     height: 100px;
   }
-
-  .van-search {
-    padding: 12px 16px 0;
-    position: fixed;
-    top: 0;
-    width: 100vw;
-    height: 46px;
-    z-index: 99;
-    background-color: #fff;
-
-    :deep(.van-search__content) {
-      border-radius: 16px;
-
-      input {
-        color: $strongFontColor;
-
-        &::placeholder {
-          color: $disableFontColor;
-        }
-      }
-    }
-  }
-
-  :deep(.van-tabs) {
-    .van-tabs__wrap {
-      position: fixed;
-      top: 90px;
-      width: 100vw;
-      height: 44px;
-      z-index: 99;
-      background-color: #fff;
-
-      &::after {
-        @include borderZeroPointFive();
-      }
-    }
-  }
 }
-
 .van-card {
   height: 80px;
   box-shadow: 0px 2px 30px 0px rgba(18, 18, 18, 0.1);
   border-radius: 10px;
   margin: 5px 0px;
 }
-
 .card {
   display: flex;
   align-items: center;
@@ -267,7 +195,6 @@ onMounted(() => {
   justify-content: space-around;
   text-align: center;
   font-size: 16px;
-
   .one {
     div:nth-child(1) {
       font-size: 18px;
@@ -275,43 +202,15 @@ onMounted(() => {
     }
   }
 }
-
-.status {
-  text-align: right;
-  position: absolute;
-  bottom: 10px;
-  width: 80px;
-  margin-left: 80px;
-}
-
 .van-cell {
   height: 45px;
   line-height: 45px;
 }
-
 :deep .van-cell__right-icon {
   margin-top: 13px;
 }
-
-.time {
-  .van-cell {
-    height: 65px;
-  }
-
-}
-
-.van-tabs:deep .van-tabs__wrap {
-  position: relative;
-  /* top: 2.4rem; */
-  width: 100vw;
-  height: 1.17333rem;
-  z-index: 99;
-  background-color: #fff;
-}
-
 .ulcalss {
   display: flex;
-
   li {
     width: 60px;
     // text-align: left;
@@ -319,12 +218,63 @@ onMounted(() => {
     font-weight: bold;
     color: #9F9F9FFF;
     text-align: center;
-
   }
 
-  // border-bottom: 3px solid red;
   .activeClss {
     color: #121212FF;
-    border-bottom: 2.5px solid #121212FF;
+    border-bottom: 4.5px solid #121212FF;
   }
-}</style>
+}
+.bjswxx {
+  width: 100%;
+  height: 168px;
+  border-radius: 10px;
+  display: flex;
+  font-size: 16px;
+  flex-direction: column;
+  background: #F6F6F6;
+  margin: 10px 0;
+
+  .one {
+    height: 76px;
+    width: 100%;
+  }
+
+  .one,
+  .two {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bjz,
+  .two {
+    margin: 0 15px;
+  }
+  .two {
+    line-height: 76px;
+  }
+  .zd {
+    display: flex;
+    align-items: center;
+    div {
+      color: #666666FF;
+    }
+    img {
+      width: 20px;
+      width: 0.53333rem;
+      margin: -12px -5PX -5px 10px;
+    }
+    .bold {
+      margin: 0px 8px;
+      color: #121212FF;
+      font-weight: bold;
+    }
+  }
+}
+.bgc {
+  background: #FFF3F3;
+}
+.bgc1 {
+  background: #FFE8E8;
+}
+</style>

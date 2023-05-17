@@ -4,20 +4,18 @@ import {useRoute } from 'vue-router'
 import { getCurrentInstance } from 'vue'
 import * as echarts from 'echarts';
 import getAssetsFile from '../../utils/pub-use'
-import { siteSelect, siteSelectechat, siteInfo } from '@/api/home'
+import { siteSelect, siteSelectechat, alarmWarningInfo } from '@/api/home'
 import { threeDats, nowDats } from "@/utils/time";
 const { appContext: { config: { globalProperties: { $dd } }}} = getCurrentInstance()
 const { query } = useRoute()
 const lists = ref([
-  {color: '#4A9FFFFF', img: '/dy.png', bgc: `linear-gradient(0deg, #DEEEFF 0%, #E4F0FF 100%)`, },
-  { color: '#F55662FF', img: '/zd.png', zxzt: '在线', bgc: `linear-gradient(0deg, #FFD6D9 0%, #FFF3F4 100%)`,  },
-  {  color: '#28C37CFF', img: '/sl.png', zxzt: '在线', bgc: `linear-gradient(0deg, #D1FFED 0%, #E8F7F1 100%)`,  },
-  {color: '#4A9FFFFF', img: '/dy.png', bgc: `linear-gradient(0deg, #DEEEFF 0%, #E4F0FF 100%)`, },
-  {  color: '#28C37CFF', img: '/sl.png', zxzt: '在线', bgc: `linear-gradient(0deg, #D1FFED 0%, #E8F7F1 100%)`,  },
-  {  color: '#28C37CFF', img: '/sl.png', zxzt: '在线', bgc: `linear-gradient(0deg, #D1FFED 0%, #E8F7F1 100%)`,  },
-  { color: '#F55662FF', img: '/zd.png', zxzt: '在线', bgc: `linear-gradient(0deg, #FFD6D9 0%, #FFF3F4 100%)`,  },
-  {color: '#4A9FFFFF', img: '/dy.png', bgc: `linear-gradient(0deg, #DEEEFF 0%, #E4F0FF 100%)`, },
-  {  color: '#A591E9FF', img: '/sw.png', zxzt: '在线', bgc: `linear-gradient(0deg, #C8BCF6 0%, #E6E3F4 100%)`, },
+  {tittle: '站点名称', data: 'siteName'},
+  {tittle: '监测因子', data: 'codeProperty' },
+  {tittle: '因子当前数值', data: 'currentValue'},
+  {tittle: '报警阈值',data: 'warningValue'},
+  {tittle: '运算符', data: 'compareWayDesc'  },
+  {tittle: '开始时间', data: 'tt'},
+  {tittle: '结束时间', data: 'endTime'},
 ]);
 let loading= ref(true)
 const columns = ref([]);
@@ -110,79 +108,41 @@ const siteSelectechatM = async (p: object) => {
 //获取站点信息
 const siteInfoM = async (p: string) => {
   loading.value = true
-  let { data, code } = await siteInfo(p)
+  let { data, code } = await alarmWarningInfo(p)
   if (code == 200) {
     projectInfo.value = data
     console.log(projectInfo, 888);
   }
 }
 onMounted(() => {
-  siteSelectM(query.siteId)
-  siteInfoM(query.siteId)
-
-  $dd.ready(function () {
-    $dd.device.geolocation.get({
-    targetAccuracy : 200,
-    coordinate : 1,
-    withReGeocode : true,
-    useCache:true, //默认是true，如果需要频繁获取地理位置，请设置false
-    onSuccess : function(result) {
-        /* 高德坐标 result 结构
-        {
-            longitude : Number,
-            latitude : Number,
-            accuracy : Number,
-            address : String,
-            province : String,
-            city : String,
-            district : String,
-            road : String,
-            netType : String,
-            operatorType : String,
-            locationType：1,
-            errorMessage : String,
-            errorCode : Number,
-            isWifiEnabled : Boolean,
-            isGpsEnabled : Boolean,
-            isFromMock : Boolean,
-            provider : wifi|lbs|gps,
-            isMobileEnabled : Boolean
-        }
-        */
-    },
-    onFail : function(err) {}
-});
-  });
+  // siteSelectM(query.siteId)
+  siteInfoM(query.logId)
+//   $dd.ready(function () {
+//     $dd.device.geolocation.get({
+//     targetAccuracy : 200,
+//     coordinate : 1,
+//     withReGeocode : true,
+//     useCache:true, //默认是true，如果需要频繁获取地理位置，请设置false
+//     onSuccess : function(result) {
+//     },
+//     onFail : function(err) {}
+// });
+//   });
 })
 </script>
 <template>
   <div class="app-container">
-    <van-cell-group>
-      <van-cell title="站点地址" :value="projectInfo.siteAddress" />
+    <van-cell-group  v-for="i in lists"> 
+      <van-cell  :title="i.tittle" :value="projectInfo[i.data]" />
     </van-cell-group>
-    <van-cell-group>
+    <!-- <van-cell-group>
       <van-cell title="站点状态">
         <template #right-icon>
           <div v-if="projectInfo.siteStatus == 1" style="color: #28C37CFF;">在线</div>
           <div v-else style="color: #dfdedf;">离线</div>
         </template>
       </van-cell>
-    </van-cell-group>
-    <van-row gutter="20">
-      <van-col v-for="i,index in projectInfo?.dataList" span="12">
-        <van-card :style="{ 'background': lists[index].bgc, 'color': lists[index].color }">
-          <template #thumb>
-            <div class="card">
-              <img style="padding: 0 3px;" :src="getAssetsFile(lists[index].img)" />
-              <div style="margin-left: 10px;">
-                <div>{{ i.codeProperty }}</div>
-                <div>{{ i.currentValue }} <span style="font-size: 11px;">{{ i.unit }}</span></div>
-              </div>
-            </div>
-          </template>
-        </van-card>
-      </van-col>
-    </van-row>
+    </van-cell-group> -->
     <van-field v-model="fieldValue" is-link readonly label="类型" placeholder="选择站点类型" @click="showPicker = true" />
     <van-popup v-model:show="showPicker" round position="bottom">
       <van-picker :columns="columns" @cancel="showPicker = false" @confirm="onConfirm" />
