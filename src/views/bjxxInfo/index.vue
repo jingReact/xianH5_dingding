@@ -143,7 +143,7 @@ onMounted(() => {
         </template>
       </van-cell>
     </van-cell-group> -->
-    <van-field v-model="fieldValue" is-link readonly label="类型" placeholder="选择站点类型" @click="showPicker = true" />
+    <!-- <van-field v-model="fieldValue" is-link readonly label="类型" placeholder="选择站点类型" @click="showPicker = true" />
     <van-popup v-model:show="showPicker" round position="bottom">
       <van-picker :columns="columns" @cancel="showPicker = false" @confirm="onConfirm" />
     </van-popup>
@@ -152,7 +152,7 @@ onMounted(() => {
     </van-cell-group>
     <van-cell-group class="time">
       <van-cell title="结束时间" is-link :label="queryParams.endTime" @click="sbxq(2)" />
-    </van-cell-group>
+    </van-cell-group> -->
     <van-loading style="text-align: center;line-height: 150px;" size="24px" v-show="loading">加载中...</van-loading>
     <div v-show="!loading && isShow.length > 0" id="main" style="width: 400px ;height: 240px;"></div>
     <div v-show="loading || isShow.length == 0"
