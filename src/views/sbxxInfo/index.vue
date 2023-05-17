@@ -10,10 +10,15 @@ import { threeDats, nowDats } from "@/utils/time";
 const { appContext: { config: { globalProperties: { $dd } }}} = getCurrentInstance()
 const { query } = useRoute()
 const lists = ref([
-  { 'projectName': '氨氮', color: '#4A9FFFFF', img: '/dy.png', bgc: `linear-gradient(0deg, #DEEEFF 0%, #E4F0FF 100%)`, zt: 11, ut: 'mg/L' },
-  { 'projectName': '浊度', color: '#F55662FF', img: '/zd.png', zxzt: '在线', bgc: `linear-gradient(0deg, #FFD6D9 0%, #FFF3F4 100%)`, zt: 22, ut: '度' },
-  { 'projectName': '流速', color: '#28C37CFF', img: '/sl.png', zxzt: '在线', bgc: `linear-gradient(0deg, #D1FFED 0%, #E8F7F1 100%)`, zt: 12, ut: 'm/s' },
-  { 'projectName': '水位', color: '#A591E9FF', img: '/sw.png', zxzt: '在线', bgc: `linear-gradient(0deg, #C8BCF6 0%, #E6E3F4 100%)`, zt: 20, ut: 'm' },
+  {color: '#4A9FFFFF', img: '/dy.png', bgc: `linear-gradient(0deg, #DEEEFF 0%, #E4F0FF 100%)`, },
+  { color: '#F55662FF', img: '/zd.png', zxzt: '在线', bgc: `linear-gradient(0deg, #FFD6D9 0%, #FFF3F4 100%)`,  },
+  {  color: '#28C37CFF', img: '/sl.png', zxzt: '在线', bgc: `linear-gradient(0deg, #D1FFED 0%, #E8F7F1 100%)`,  },
+  {color: '#4A9FFFFF', img: '/dy.png', bgc: `linear-gradient(0deg, #DEEEFF 0%, #E4F0FF 100%)`, },
+  {  color: '#28C37CFF', img: '/sl.png', zxzt: '在线', bgc: `linear-gradient(0deg, #D1FFED 0%, #E8F7F1 100%)`,  },
+  {  color: '#28C37CFF', img: '/sl.png', zxzt: '在线', bgc: `linear-gradient(0deg, #D1FFED 0%, #E8F7F1 100%)`,  },
+  { color: '#F55662FF', img: '/zd.png', zxzt: '在线', bgc: `linear-gradient(0deg, #FFD6D9 0%, #FFF3F4 100%)`,  },
+  {color: '#4A9FFFFF', img: '/dy.png', bgc: `linear-gradient(0deg, #DEEEFF 0%, #E4F0FF 100%)`, },
+  {  color: '#A591E9FF', img: '/sw.png', zxzt: '在线', bgc: `linear-gradient(0deg, #C8BCF6 0%, #E6E3F4 100%)`, },
 ]);
 let loading= ref(true)
 const columns = ref([]);
@@ -165,14 +170,14 @@ onMounted(() => {
       </van-cell>
     </van-cell-group>
     <van-row gutter="20">
-      <van-col v-for="i in lists" span="12">
-        <van-card :style="{ 'background': i.bgc, 'color': i.color }">
+      <van-col v-for="i,index in projectInfo?.dataList" span="12">
+        <van-card :style="{ 'background': lists[index].bgc, 'color': lists[index].color }">
           <template #thumb>
             <div class="card">
-              <img style="padding: 0 3px;" :src="getAssetsFile(i.img)" />
+              <img style="padding: 0 3px;" :src="getAssetsFile(lists[index].img)" />
               <div style="margin-left: 10px;">
-                <div>{{ i.projectName }}</div>
-                <div>{{ i.zt }} <span style="font-size: 11px;">{{ i.ut }}</span></div>
+                <div>{{ i.codeProperty }}</div>
+                <div>{{ i.currentValue }} <span style="font-size: 11px;">{{ i.unit }}</span></div>
               </div>
             </div>
           </template>

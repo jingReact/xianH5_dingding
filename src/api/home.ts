@@ -23,3 +23,7 @@ export const apiGetBlogDetail = (params?: object) => {
   export const siteInfo = (params?: string) => {
     return reuest.get(`/newApi/dingDing/site/info/${params}`);
   };
+
+  export const sitelistselect = (params?: string) => {
+    return reuest.get(`/newApi/dingDing/site/list/select`);
+  };

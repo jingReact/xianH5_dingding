@@ -25,7 +25,8 @@ const apiGetBlogDetailM = async (p) => {
             'device.notification.prompt',
             'biz.ding.post',
             'biz.util.openLink',
-            'runtime.permission.requestOperateAuthCode'
+            'runtime.permission.requestOperateAuthCode',
+            'device.geolocation'
         ], // 必填，需要使用的jsapi列表，注意：不要带dd。
         ...data
     });
