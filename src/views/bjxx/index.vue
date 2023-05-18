@@ -102,16 +102,16 @@ onMounted(() => {
           <template #thumb>
             <div class="card">
               <div style="margin-left: 10px;" class="one">
-                <div>{{ WarningCont.alarmNum }} </div>
+                <div>{{ WarningCont?.alarmNum }} </div>
                 <div>{{ i.projectName }}</div>
               </div>
               <div class="one">
-                <div>{{ WarningCont.alarmingNum }} </div>
+                <div>{{ WarningCont?.alarmingNum }} </div>
                 <div>{{ i.tow }}</div>
               </div>
 
               <div class="one">
-                <div>{{ WarningCont.alarmExpireNum }} </div>
+                <div>{{ WarningCont?.alarmExpireNum }} </div>
                 <div>{{ i.three }}</div>
               </div>
             </div>
@@ -125,16 +125,16 @@ onMounted(() => {
           <template #thumb>
             <div class="card">
               <div style="margin-left: 10px;" class="one">
-                <div>{{ WarningCont.warnNum }} </div>
+                <div>{{ WarningCont?.warnNum }} </div>
                 <div>{{ i.projectName }}</div>
               </div>
               <div class="one">
-                <div>{{ WarningCont.warningNum }} </div>
+                <div>{{ WarningCont?.warningNum }} </div>
                 <div>{{ i.tow }}</div>
               </div>
 
               <div class="one">
-                <div>{{ WarningCont.warnExpireNum }} </div>
+                <div>{{ WarningCont?.warnExpireNum }} </div>
                 <div>{{ i.three }}</div>
               </div>
             </div>
@@ -147,12 +147,12 @@ onMounted(() => {
         <van-field v-model="fieldValue" is-link readonly label="站点列表" placeholder="选择站点下拉列表" @click="showPicker = true" />
     <van-pull-refresh v-model="ListParams.isLoading" :disabled="ListParams.finished" @refresh="onRefresh">
       <van-list v-model="loading" :finished="ListParams.finished" finished-text="没有更多了" @load="onLoad">
-        <div class="bjswxx" :class="{ 'bgc': i.warningState == 1 }" v-for="i in WarningList" @click="infoClick(i)">
-          <div class="one" :class="{ 'bgc1': i.warningState == 1 }">
+        <div class="bjswxx" :class="{ 'bgc': i?.warningState == 1 }" v-for="i in WarningList" @click="infoClick(i)">
+          <div class="one" :class="{ 'bgc1': i?.warningState == 1 }">
             <div class="zd">
               <img src="../../assets/home/bjyj2.png" alt="">
-              <div class="bold">{{ i.siteName }}</div>
-              <div class="bold">{{ i.tt }}</div>
+              <div class="bold">{{ i?.siteName }}</div>
+              <div class="bold">{{ i?.tt }}</div>
             </div>
             <span class="bjz" :style="{ 'color': i.warningState == 1 ? '#FF6E6EFF' : '#666666FF' }">
               {{ i.warningState == 1 ? '报警中' : '已失效' }}
