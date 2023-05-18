@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue'
 import {useRoute } from 'vue-router'
-import { getCurrentInstance } from 'vue'
+import { getCurrentInstance ,ComponentInternalInstance} from 'vue'
 import * as echarts from 'echarts';
 import getAssetsFile from '../../utils/pub-use'
 import { siteSelect, siteSelectechat, siteInfo } from '@/api/home'
 import { threeDats, nowDats } from "@/utils/time";
 import Gmap from '@/components/Gmap.vue'
 
-const { appContext: { config: { globalProperties: { $dd } }}} = getCurrentInstance()
+const { appContext: { config: { globalProperties: { $dd } }}} = getCurrentInstance() as ComponentInternalInstance
 const { query } = useRoute()
 const lists = ref([
   {color: '#4A9FFFFF', img: '/dy.png', bgc: `linear-gradient(0deg, #DEEEFF 0%, #E4F0FF 100%)`, },
@@ -65,7 +65,7 @@ const initMths = (p,m) => {
   });
 }
 //点击时间
-const sbxq = (i) => {
+const sbxq = (i:any) => {
   $dd.ready(function () {
     $dd.biz.util.datepicker({
       format: 'yyyy-MM-dd',
@@ -90,10 +90,10 @@ const onConfirm = ({ text, value }) => {
   siteSelectechatM(queryParams.value)
 };
 //获取下拉因子列表
-const siteSelectM = async (p: string) => {
+const siteSelectM = async (p: any) => {
   let { data } = await siteSelect(p)
   console.log(data);
-  data.forEach(i => {
+  data.forEach( i => {
     columns.value.push({ text: i.name, value: i.codeAscll })
   });
   let ar = data[0]
@@ -112,7 +112,7 @@ const siteSelectechatM = async (p: object) => {
 //获取站点信息
 let mapShow=ref(false)
 
-const siteInfoM = async (p: string) => {
+const siteInfoM = async (p: any) => {
   loading.value = true
   let { data, code } = await siteInfo(p)
   if (code == 200) {
@@ -130,18 +130,18 @@ onMounted(() => {
   <Gmap :data="projectInfo" v-if="mapShow"></Gmap>
   <div class="app-container">
     <van-cell-group>
-      <van-cell title="站点地址" :value="projectInfo.siteAddress" />
+      <van-cell title="站点地址" :value="projectInfo['siteAddress']" />
     </van-cell-group>
     <van-cell-group>
       <van-cell title="站点状态">
         <template #right-icon>
-          <div v-if="projectInfo.siteStatus == 1" style="color: #28C37CFF;">在线</div>
+          <div v-if="projectInfo['siteStatus'] == 1" style="color: #28C37CFF;">在线</div>
           <div v-else style="color: #dfdedf;">离线</div>
         </template>
       </van-cell>
     </van-cell-group>
     <van-row gutter="20">
-      <van-col v-for="i,index in projectInfo?.dataList" span="12">
+      <van-col v-for="i,index in projectInfo['dataList']" span="12">
         <van-card :style="{ 'background': lists[index].bgc, 'color': lists[index].color }">
           <template #thumb>
             <div class="card">

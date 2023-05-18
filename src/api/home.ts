@@ -7,7 +7,7 @@ export const siteCont = (params?: object) => {
   return reuest.get(`/newApi//dingDing/site/count`, params);
 };
 
-export const siteList = (params?: string) => {
+export const siteList = (params?: any) => {
   return reuest.get(`/newApi/dingDing/site/by/type/list`, params);
 };
 
@@ -24,12 +24,12 @@ export const siteInfo = (params?: string) => {
   return reuest.get(`/newApi/dingDing/site/info/${params}`);
 };
 
-export const sitelistselect = (params?: string) => {
+export const sitelistselect = () => {
   return reuest.get(`/newApi/dingDing/site/list/select`);
 };
 
 
-export const alarmWarningCont = (params?: string) => {
+export const alarmWarningCont = () => {
   return reuest.get(`/newApi/dingDing/alarmWarning/count`);
 };
 
@@ -46,7 +46,7 @@ export const sitemonitor = (params?: string) => {
   return reuest.get(`/newApi/dingDing/site/monitor/data/${params}`);
 };
 
-export const siterealdata = (params?: string) => {
+export const siterealdata = () => {
   return reuest.get(`/newApi/dingDing/site/real/data/list`);
 };
 

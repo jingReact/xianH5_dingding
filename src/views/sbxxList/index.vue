@@ -25,7 +25,7 @@ const lists = ref([
   { 'projectName': '雨水泵站', img: '/ysbz_icon.png', zxzt: '在线', icon: '', zt: 0 },
 ]);
 //点击设备详情
-const sbxq = (i) => {
+const sbxq = (i:any) => {
   router.push({path:'/sbxx',query:i})
 }
 //设备信息接口

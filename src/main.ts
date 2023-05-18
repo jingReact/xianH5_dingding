@@ -8,7 +8,7 @@ import * as dd from 'dingtalk-jsapi'; // 此方式为整体加载，也可按需
 import { apiGetBlogDetail } from '@/api/home'
 import { initDingH5RemoteDebug } from "dingtalk-h5-remote-debug";
 initDingH5RemoteDebug();
-const apiGetBlogDetailM = async (p) => {
+const apiGetBlogDetailM = async (p:any) => {
     let { code, data } = await apiGetBlogDetail(p)
     dd.config({
         agentId: '', // 必填，微应用ID

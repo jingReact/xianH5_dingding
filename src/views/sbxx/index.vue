@@ -10,12 +10,12 @@ let keyword = ref()
 const lists = ref([
 ]);
 //点击设备详情
-const sbxq = (i) => {
+const sbxq = (i:any) => {
   console.log(i);
   router.push({ path: '/sbxxInfo', query: i })
 }
 //获取设备列表
-const siteListMt = async (p: string) => {
+const siteListMt = async (p: any) => {
   let { data } = await siteList(p)
   console.log(data);
   lists.value = data

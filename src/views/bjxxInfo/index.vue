@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { getCurrentInstance } from 'vue'
+import { getCurrentInstance ,ComponentInternalInstance} from 'vue'
 import * as echarts from 'echarts';
 import { siteSelect, sitemonitor, alarmWarningInfo } from '@/api/home'
 import Gmap from '@/components/Gmap.vue'
-const { appContext: { config: { globalProperties: { $dd } } } } = getCurrentInstance()
+const { appContext: { config: { globalProperties: { $dd } } } } = getCurrentInstance() as ComponentInternalInstance
 const { query } = useRoute()
 const lists = ref([
   { tittle: '站点名称', data: 'siteName' },

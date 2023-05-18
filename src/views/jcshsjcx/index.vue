@@ -19,17 +19,18 @@ const listDate = ref(
 );
 let tabslist = ref(
   [
-    { tittle: '实时数据', data: 'siteNo' },
-    { tittle: '历史数据', data: 'siteName' },
+    { tittle: '实时数据', data: 1},
+    { tittle: '历史数据', data: 2 },
   ]
 );
+let active=ref(1)
 //点击设备详情
-const sbxq = (i) => {
+const sbxq = (i:any) => {
   console.log(i);
   router.push({ path: '/sbxxInfo', query: i })
 }
 //获取设备列表
-const siteListMt = async (isRefresh) => {
+const siteListMt = async (isRefresh:any) => {
   let { data } = await siterealdetial(query.siteId)
   lists.value = data
   // if (isRefresh) {//下拉刷新
@@ -80,24 +81,24 @@ onMounted(() => {
                   <div style="display: flex;justify-content: space-between;padding: 0 20px;">
                     <span v-if="i.data == 'siteName'" class="bold-t" style="display: flex;align-items: center;"> 
                       <img style="height: 18px;"
-                      v-if="lists.siteStatus == 1"
+                      v-if="lists['siteStatus'] == 1"
                         src="../../assets/images/zhandian.png" alt=""> 
                         <img style="height: 18px;"
                         v-else
                         src="../../assets/images/sblx.png" alt=""> 
 
-                        <span style="padding: 0 5px;"> {{ lists.siteName }}</span>
+                        <span style="padding: 0 5px;"> {{ lists['siteName'] }}</span>
                        </span>
                     <span v-else class="bold-t">{{ i.tittle }}</span>
                     <span> <span v-if="i.data != 'siteName'"> {{ lists[i.data] }} </span>
-                      <span class="zxlx" v-if="i.data == 'siteName' && lists.siteStatus == 1">在线</span>
-                      <span class="zxlx lx" v-if="i.data == 'siteName' && lists.siteStatus == 2">离线</span>
+                      <span class="zxlx" v-if="i.data == 'siteName' && lists['siteStatus'] == 1">在线</span>
+                      <span class="zxlx lx" v-if="i.data == 'siteName' && lists['siteStatus'] == 2">离线</span>
                     </span>
                   </div>
                 </template>
               </van-cell>
             </van-cell-group>
-            <van-cell-group v-for="k in lists.dataList" span="24" @click="sbxq(i)" style="margin: 10px 0;">
+            <van-cell-group v-for="k in lists['dataList']" span="24" @click="sbxq(i)" style="margin: 10px 0;">
               <van-cell>
                 <template #title>
                   <div style="display: flex;justify-content: space-between;padding: 0 20px;">

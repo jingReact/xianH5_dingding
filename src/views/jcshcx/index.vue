@@ -16,13 +16,13 @@ const listDate = ref(
   ]
 );
 //点击设备详情
-const sbxq = (i) => {
+const sbxq = (i:any) => {
   console.log(i);
   router.push({ path: '/jcshsjcx', query: i })
 }
 //获取设备列表
-const siteListMt = async (isRefresh) => {
-  let { data, total } = await siterealdata({ typeId: query.typeId, keyword: keyword.value })
+const siteListMt = async (isRefresh:any) => {
+  let { data, total:number } = await siterealdata({ typeId: query.typeId, keyword: keyword.value })
   lists.value = data
   if (isRefresh) {//下拉刷新
     lists.value = [...data, ...lists.value]
@@ -73,12 +73,12 @@ onMounted(() => {
               <van-cell :title-class="{ 'zdimg': true }">
                 <template #title>
                   <div style="display: flex;align-items: center;">
-                    <img style="height: 20px;padding: 10px 10px;" src="../../assets/images/站点.png" alt="">
-                    <span style="font-weight: bold;font-size: 18px;" class="custom-title">{{ i.siteName }}</span>
+                    <img style="height: 20px;padding: 10px 15px;" src="../../assets/images/站点.png" alt="">
+                    <span style="font-weight: bold;font-size: 18px;" class="custom-title">{{ i['siteName'] }}</span>
                   </div>
                 </template>
                 <template #right-icon>
-                  <span v-if="i.siteStatus == 1" class="zxlx" style="">在线</span>
+                  <span v-if="i['siteStatus'] == 1" class="zxlx" style="">在线</span>
                   <span v-else class="zxlx lx" style="display: inline-block;">离线</span>
                 </template>
               </van-cell>
@@ -86,7 +86,7 @@ onMounted(() => {
                 <template #title>
                   <div style="display: flex;justify-content: space-between;padding: 0 20px;">
                     <span class="bold-t">站点编号</span>
-                    <span>{{ i.siteNo }}</span>
+                    <span>{{ i['siteNo'] }}</span>
                   </div>
 
                 </template>
@@ -95,16 +95,16 @@ onMounted(() => {
                 <template #title>
                   <div style="display: flex;justify-content: space-between;padding: 0 20px;">
                     <span class="bold-t">检测时间</span>
-                    <span>{{ i.monitorTime }}</span>
+                    <span>{{ i['monitorTime'] }}</span>
                   </div>
 
                 </template>
               </van-cell>
-              <van-cell v-for="k in i.dataList">
+              <van-cell v-for="k in i['dataList']">
                 <template #title>
                   <div style="display: flex;justify-content: space-between;padding: 0 20px;">
-                    <span class="bold-t">{{ k.codeProperty }}</span>
-                    <span>{{ k.currentValue }}{{ k.unit }}</span>
+                    <span class="bold-t">{{ k['codeProperty'] }}</span>
+                    <span>{{ k['currentValue'] }}{{ k['unit'] }}</span>
                   </div>
                 </template>
               </van-cell>
@@ -150,19 +150,25 @@ onMounted(() => {
       height: 44px;
       z-index: 99;
       background-color: #fff;
-
       &::after {
         @include borderZeroPointFive();
       }
     }
   }
 }
+:deep .van-cell { 
+  background: #fff;
+}
 .van-card {
-  min-height: 98px;
   border-radius: 10px;
   margin: 20px 0px;
+  width: 100%;
   :deep .van-card__thumb {
+    height: auto;
     width: 100% !important;
+    overflow: hidden;
+      background-color: #fff;
+      box-shadow: 0px 2px 10px 0px rgba(18,18,18,0.1);
   }
 }
 .status {
@@ -192,4 +198,5 @@ onMounted(() => {
   font-size: 12px;
   padding-bottom: 2px;
 }
+
 </style>
