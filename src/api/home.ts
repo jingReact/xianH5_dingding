@@ -54,3 +54,11 @@ export const siterealdata = () => {
 export const siterealdetial = (params?: string) => {
   return reuest.get(`/newApi/dingDing/site/real/data/${params}`);
 };
+
+export const sitehistory = (params?: object) => {
+  return reuest.get(`/newApi/dingDing/site/history/data/list`,params);
+};
+
+export const sitehistoryecharts = (params?: object) => {
+  return reuest.get(`/newApi/dingDing/site/history/data/echarts`,params);
+};
