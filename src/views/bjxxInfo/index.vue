@@ -1,30 +1,25 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue'
-import {useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { getCurrentInstance } from 'vue'
 import * as echarts from 'echarts';
-import getAssetsFile from '../../utils/pub-use'
-import { siteSelect, siteSelectechat, alarmWarningInfo } from '@/api/home'
-import { threeDats, nowDats } from "@/utils/time";
-const { appContext: { config: { globalProperties: { $dd } }}} = getCurrentInstance()
+import { siteSelect, sitemonitor, alarmWarningInfo } from '@/api/home'
+import Gmap from '@/components/Gmap.vue'
+const { appContext: { config: { globalProperties: { $dd } } } } = getCurrentInstance()
 const { query } = useRoute()
 const lists = ref([
-  {tittle: '站点名称', data: 'siteName'},
-  {tittle: '监测因子', data: 'codeProperty' },
-  {tittle: '因子当前数值', data: 'currentValue'},
-  {tittle: '报警阈值',data: 'warningValue'},
-  {tittle: '运算符', data: 'compareWayDesc'  },
-  {tittle: '开始时间', data: 'tt'},
-  {tittle: '结束时间', data: 'endTime'},
+  { tittle: '站点名称', data: 'siteName' },
+  { tittle: '监测因子', data: 'codeProperty' },
+  { tittle: '因子当前数值', data: 'currentValue' },
+  { tittle: '报警阈值', data: 'warningValue' },
+  { tittle: '运算符', data: 'compareWayDesc' },
+  { tittle: '开始时间', data: 'tt' },
+  { tittle: '结束时间', data: 'endTime' },
 ]);
-let loading= ref(true)
-const columns = ref([]);
-const fieldValue = ref();
-const showPicker = ref(false);
+let loading = ref(true)
 let isShow = ref([])
 let projectInfo = ref({})
-let queryParams= ref({ siteId: query.siteId, codeAscii: '', startTime: nowDats(), endTime: threeDats() })
-const initMths = (p,m) => {
+const initMths = (p, m) => {
   loading.value = false
   isShow.value = p
   let xDate = p
@@ -33,7 +28,6 @@ const initMths = (p,m) => {
   // 绘制图表
   myChart.setOption({
     title: {
-      // text: 'ECharts 入门示例'
     },
     tooltip: {},
     xAxis: {
@@ -60,99 +54,42 @@ const initMths = (p,m) => {
     ]
   });
 }
-//点击时间
-const sbxq = (i) => {
-  $dd.ready(function () {
-    $dd.biz.util.datepicker({
-      format: 'yyyy-MM-dd',
-      value: new Date(),
-      onSuccess: ({ value }) => {
-        if (i == 1) {
-          queryParams.value.startTime = value
-        } else {
-          queryParams.value.endTime = value
-        }
-        siteSelectechatM(queryParams.value)
-      },
-      onFail: (err) => { }
-    })
-  });
-}
-//切换 下方位置
-const onConfirm = ({ text, value }) => {
-  showPicker.value = false;
-  fieldValue.value = text
-  queryParams.value.codeAscii = value
-  siteSelectechatM(queryParams.value)
-};
-//获取下拉因子列表
-const siteSelectM = async (p: string) => {
-  let { data } = await siteSelect(p)
-  console.log(data);
-  data.forEach(i => {
-    columns.value.push({ text: i.name, value: i.codeAscll })
-  });
-  let ar = data[0]
-  fieldValue.value = ar.name
-  queryParams.value.codeAscii = ar.codeAscll
-  siteSelectechatM(queryParams.value)
-}
 //获取下拉因子列表echarts
-const siteSelectechatM = async (p: object) => {
+const siteSelectechatM = async (p: string) => {
   loading.value = true
-  let { data: { timeList, dataList }, code } = await siteSelectechat(p)
+  let { data: { timeList, dataList }, code } = await sitemonitor(p)
   if (code == 200) {
     initMths(timeList, dataList)
   }
 }
 //获取站点信息
+let mapShow = ref(false)
 const siteInfoM = async (p: string) => {
   loading.value = true
   let { data, code } = await alarmWarningInfo(p)
   if (code == 200) {
     projectInfo.value = data
-    console.log(projectInfo, 888);
+    console.log(projectInfo.value, 8888000);
+    mapShow.value = true
+    siteSelectechatM(query.logId)
   }
 }
 onMounted(() => {
-  // siteSelectM(query.siteId)
   siteInfoM(query.logId)
-//   $dd.ready(function () {
-//     $dd.device.geolocation.get({
-//     targetAccuracy : 200,
-//     coordinate : 1,
-//     withReGeocode : true,
-//     useCache:true, //默认是true，如果需要频繁获取地理位置，请设置false
-//     onSuccess : function(result) {
-//     },
-//     onFail : function(err) {}
-// });
-//   });
 })
 </script>
 <template>
+  <Gmap :data="projectInfo" v-if="mapShow"></Gmap>
   <div class="app-container">
-    <van-cell-group  v-for="i in lists"> 
-      <van-cell  :title="i.tittle" :value="projectInfo[i.data]" />
-    </van-cell-group>
-    <!-- <van-cell-group>
-      <van-cell title="站点状态">
-        <template #right-icon>
-          <div v-if="projectInfo.siteStatus == 1" style="color: #28C37CFF;">在线</div>
-          <div v-else style="color: #dfdedf;">离线</div>
-        </template>
+    <van-cell-group v-for="i in lists">
+      <van-cell :title="i.tittle">
+        <div bindtap="open">{{ projectInfo[i.data] }}
+          <span :class="{ 'pclass': true, 'nopclass': projectInfo.warningState == 2 }"
+            v-if="i.data == 'siteName'">{{ projectInfo.warningState == 1 ? '报警中' : '预警中' }}</span>
+        </div>
+
       </van-cell>
-    </van-cell-group> -->
-    <!-- <van-field v-model="fieldValue" is-link readonly label="类型" placeholder="选择站点类型" @click="showPicker = true" />
-    <van-popup v-model:show="showPicker" round position="bottom">
-      <van-picker :columns="columns" @cancel="showPicker = false" @confirm="onConfirm" />
-    </van-popup>
-    <van-cell-group class="time">
-      <van-cell title="开始时间" is-link :label="queryParams.startTime" @click="sbxq(1)" />
     </van-cell-group>
-    <van-cell-group class="time">
-      <van-cell title="结束时间" is-link :label="queryParams.endTime" @click="sbxq(2)" />
-    </van-cell-group> -->
     <van-loading style="text-align: center;line-height: 150px;" size="24px" v-show="loading">加载中...</van-loading>
     <div v-show="!loading && isShow.length > 0" id="main" style="width: 400px ;height: 240px;"></div>
     <div v-show="loading || isShow.length == 0"
@@ -162,48 +99,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .app-container {
-  padding: 0 10px;
-
-  .search {
-    height: 100px;
-  }
-
-  .van-search {
-    padding: 12px 16px 0;
-    position: fixed;
-    top: 0;
-    width: 100vw;
-    height: 46px;
-    z-index: 99;
-    background-color: #fff;
-
-    :deep(.van-search__content) {
-      border-radius: 16px;
-
-      input {
-        color: $strongFontColor;
-
-        &::placeholder {
-          color: $disableFontColor;
-        }
-      }
-    }
-  }
-
-  :deep(.van-tabs) {
-    .van-tabs__wrap {
-      position: fixed;
-      top: 90px;
-      width: 100vw;
-      height: 44px;
-      z-index: 99;
-      background-color: #fff;
-
-      &::after {
-        @include borderZeroPointFive();
-      }
-    }
-  }
+  padding: 200px 10px;
 }
 
 .van-card {
@@ -213,21 +109,7 @@ onMounted(() => {
   margin: 10px 0px;
 }
 
-.card {
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-  margin-top: 20px;
-  width: 330px;
-}
 
-.status {
-  text-align: right;
-  position: absolute;
-  bottom: 10px;
-  width: 80px;
-  margin-left: 80px;
-}
 
 .van-cell {
   height: 45px;
@@ -238,10 +120,29 @@ onMounted(() => {
   margin-top: 13px;
 }
 
-.time {
-  .van-cell {
-    height: 65px;
-  }
+.pclass {
+  display: inline-block;
+  width: 63px;
+  height: 30px;
+  color: #FF6564;
+  background: #FFDCDC;
+  border-radius: 15px;
+  line-height: 30px;
+  text-align: center;
+}
+
+.nopclass {
+  color: #000;
+  background: #F6F6F6;
 
 }
+.custom-title{ 
+  font-size: 22px;
+  font-weight: bold;
+}
+.zdimg{
+  color: red;
+
+}
+
 </style>

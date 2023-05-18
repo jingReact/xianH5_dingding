@@ -85,21 +85,20 @@ onMounted(() => {
       }
     }
   }
+  // :deep(.van-tabs) {
+  //   .van-tabs__wrap {
+  //     position: fixed;
+  //     top: 90px;
+  //     width: 100vw;
+  //     height: 44px;
+  //     z-index: 99;
+  //     background-color: #fff;
 
-  :deep(.van-tabs) {
-    .van-tabs__wrap {
-      position: fixed;
-      top: 90px;
-      width: 100vw;
-      height: 44px;
-      z-index: 99;
-      background-color: #fff;
-
-      &::after {
-        @include borderZeroPointFive();
-      }
-    }
-  }
+  //     &::after {
+  //       @include borderZeroPointFive();
+  //     }
+  //   }
+  // }
 }
 
 .van-card {

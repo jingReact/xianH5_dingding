@@ -13,6 +13,12 @@ let loading = ref(true)
 const columns = ref([]);
 const fieldValue = ref();
 const showPicker = ref(false);
+let tabslist = ref(
+  [
+    { tittle: '报警', name: 1},
+    { tittle: '预警', name: 2 },
+  ]
+);
 //切换 下方位置
 const onConfirm = ({ text, value }) => {
   showPicker.value = false;
@@ -31,9 +37,10 @@ const siteSelectM = async (p: string) => {
   fieldValue.value = ar.name
 }
 let liShow = ref(1)
-function liClick(c) {
-  liShow.value = c
-  ListParams.value.type = c
+function liClick({name}) {
+  // console.log(c,44);
+  liShow.value = name+1
+  ListParams.value.type = name+1
   alarmWarningListM()
 }
 //查询统计报警预警数据总数信息
@@ -135,14 +142,9 @@ onMounted(() => {
         </van-card>
       </van-col>
     </van-row>
-    <ul class="ulcalss">
-      <li @click="liClick(1)" :class="{ 'activeClss': liShow == 1 }">报警</li>
-      <li @click="liClick(2)" :class="{ 'activeClss': liShow == 2 }">预警</li>
-    </ul>
-    <van-field v-model="fieldValue" is-link readonly label="站点列表" placeholder="选择站点下拉列表" @click="showPicker = true" />
-    <van-popup v-model:show="showPicker" round position="bottom">
-      <van-picker :columns="columns" @cancel="showPicker = false" @confirm="onConfirm" />
-    </van-popup>
+    <van-tabs v-model:active="active" animated @click-tab="liClick">
+      <van-tab v-for="i in tabslist" :title="i.tittle">
+        <van-field v-model="fieldValue" is-link readonly label="站点列表" placeholder="选择站点下拉列表" @click="showPicker = true" />
     <van-pull-refresh v-model="ListParams.isLoading" :disabled="ListParams.finished" @refresh="onRefresh">
       <van-list v-model="loading" :finished="ListParams.finished" finished-text="没有更多了" @load="onLoad">
         <div class="bjswxx" :class="{ 'bgc': i.warningState == 1 }" v-for="i in WarningList" @click="infoClick(i)">
@@ -167,9 +169,17 @@ onMounted(() => {
         </div>
       </van-list>
     </van-pull-refresh>
+        </van-tab>
+        </van-tabs>
+        <van-popup v-model:show="showPicker" round position="bottom">
+      <van-picker :columns="columns" @cancel="showPicker = false" @confirm="onConfirm" />
+    </van-popup>
   </div>
 </template>
 <style lang="scss" scoped>
+:deep .van-field__label {
+    margin-left: 8px;
+}
 .van-pull-refresh {
     overflow-y: scroll;
     height: 400px;
@@ -230,7 +240,7 @@ onMounted(() => {
   height: 168px;
   border-radius: 10px;
   display: flex;
-  font-size: 16px;
+  font-size: 14px;
   flex-direction: column;
   background: #F6F6F6;
   margin: 10px 0;
@@ -276,5 +286,16 @@ onMounted(() => {
 }
 .bgc1 {
   background: #FFE8E8;
+}
+:deep(.van-tabs) {
+  .van-tab--active {
+    color: #278DFFFF;
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  .van-tabs__line {
+    background-color: #278DFFFF;
+  }
 }
 </style>

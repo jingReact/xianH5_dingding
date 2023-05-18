@@ -2,7 +2,7 @@
  * @Author: liyingjing ll47991367@qq.com
  * @Date: 2023-05-11 19:03:37
  * @LastEditors: liyingjing ll47991367@qq.com
- * @LastEditTime: 2023-05-17 14:15:51
+ * @LastEditTime: 2023-05-17 19:31:10
  * @FilePath: \vue3-vite2-ts-blog-h5\src\router\index.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -67,6 +67,13 @@ const routes: Array<RouteRecordRaw> = [
         component: loadComponent("jcshcx/index"),
         meta: {
           title: "监测数据查询",
+        },
+      },
+      {
+        path: "/jcshsjcx",
+        component: loadComponent("jcshsjcx/index"),
+        meta: {
+          title: "检测数据查询",
         },
       },
     ],

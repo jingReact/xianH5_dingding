@@ -41,3 +41,16 @@ export const alarmWarningList = (params?: object) => {
 export const alarmWarningInfo = (params?: string) => {
   return reuest.get(`/newApi/dingDing/alarmWarning/info/${params}`);
 };
+
+export const sitemonitor = (params?: string) => {
+  return reuest.get(`/newApi/dingDing/site/monitor/data/${params}`);
+};
+
+export const siterealdata = (params?: string) => {
+  return reuest.get(`/newApi/dingDing/site/real/data/list`);
+};
+
+
+export const siterealdetial = (params?: string) => {
+  return reuest.get(`/newApi/dingDing/site/real/data/${params}`);
+};

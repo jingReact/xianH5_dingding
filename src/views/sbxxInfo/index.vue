@@ -6,6 +6,8 @@ import * as echarts from 'echarts';
 import getAssetsFile from '../../utils/pub-use'
 import { siteSelect, siteSelectechat, siteInfo } from '@/api/home'
 import { threeDats, nowDats } from "@/utils/time";
+import Gmap from '@/components/Gmap.vue'
+
 const { appContext: { config: { globalProperties: { $dd } }}} = getCurrentInstance()
 const { query } = useRoute()
 const lists = ref([
@@ -108,54 +110,24 @@ const siteSelectechatM = async (p: object) => {
   }
 }
 //获取站点信息
+let mapShow=ref(false)
+
 const siteInfoM = async (p: string) => {
   loading.value = true
   let { data, code } = await siteInfo(p)
   if (code == 200) {
     projectInfo.value = data
     console.log(projectInfo, 888);
+    mapShow.value=true
   }
 }
 onMounted(() => {
   siteSelectM(query.siteId)
   siteInfoM(query.siteId)
-
-  $dd.ready(function () {
-    $dd.device.geolocation.get({
-    targetAccuracy : 200,
-    coordinate : 1,
-    withReGeocode : true,
-    useCache:true, //默认是true，如果需要频繁获取地理位置，请设置false
-    onSuccess : function(result) {
-        /* 高德坐标 result 结构
-        {
-            longitude : Number,
-            latitude : Number,
-            accuracy : Number,
-            address : String,
-            province : String,
-            city : String,
-            district : String,
-            road : String,
-            netType : String,
-            operatorType : String,
-            locationType：1,
-            errorMessage : String,
-            errorCode : Number,
-            isWifiEnabled : Boolean,
-            isGpsEnabled : Boolean,
-            isFromMock : Boolean,
-            provider : wifi|lbs|gps,
-            isMobileEnabled : Boolean
-        }
-        */
-    },
-    onFail : function(err) {}
-});
-  });
 })
 </script>
 <template>
+  <Gmap :data="projectInfo" v-if="mapShow"></Gmap>
   <div class="app-container">
     <van-cell-group>
       <van-cell title="站点地址" :value="projectInfo.siteAddress" />
@@ -202,8 +174,8 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .app-container {
-  padding: 0 10px;
-
+  padding: 200px 10px;
+  height: calc(100% - 200px);
   .search {
     height: 100px;
   }
