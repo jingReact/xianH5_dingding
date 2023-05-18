@@ -4,4 +4,5 @@ export default function getPageTitle(pageTitle:string) {
       return `${pageTitle} - ${title}`;
     }
     return `${title}`;
+    
   }
