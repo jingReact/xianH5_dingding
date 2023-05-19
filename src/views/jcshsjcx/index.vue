@@ -214,7 +214,7 @@ onMounted(() => {
 
       </van-tab>
     </van-tabs>
-    <div v-if="active == 1">
+    <div v-if="active == 1" class="two">
       <van-card>
         <template #thumb>
           <van-field v-model="fieldValue" is-link readonly label="因子" placeholder="选择站点类型" @click="showPicker = true" />
@@ -371,7 +371,15 @@ onMounted(() => {
     background-color: #278DFFFF;
   }
 }
-
+:deep .two{ 
+  .van-tab {
+    background: linear-gradient(0deg, rgba(210,225,255,0) 0%, #D2E1FF 100%);
+  }
+  .van-tab--active {
+    background:#fff;
+    font-weight: bold;
+  }
+}
 .zxlx {
   margin: 5px -5px 0 0;
   display: inline-block;
