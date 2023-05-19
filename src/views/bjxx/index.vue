@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted,getCurrentInstance, ComponentInternalInstance  } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { sitelistselect, siteInfo, alarmWarningCont, alarmWarningList } from '@/api/home'
 const lists = ref([
@@ -8,6 +8,8 @@ const lists = ref([
 const lists1 = ref([
   { 'projectName': '预警', color: '#FFFFFFFF', zxzt: '在线', bgc: `linear-gradient(90deg, #FFA071 0%, #FFC3A5 100%)`, zt: 22, tow: '预警中', three: '已失效' },
 ]);
+const { appContext: { config: { globalProperties: { $dd } } } } = getCurrentInstance() as ComponentInternalInstance
+
 const router = useRouter()
 let loading = ref(true)
 const columns = ref([]);
@@ -92,6 +94,14 @@ function infoClick(i){
 onMounted(() => {
   siteSelectM()
   alarmWarningContM()
+  $dd.ready(function () {
+    $dd.biz.navigation.setTitle({
+    title : '站点报警预警信息',//控制标题文本，空字符串表示显示默认文本
+    onSuccess : function(result) {
+    },
+    onFail : function(err) {}
+});
+      })
 })
 </script>
 <template>

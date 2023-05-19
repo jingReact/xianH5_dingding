@@ -16,7 +16,7 @@
   </div>
 </template>
  <script setup>
- import { reactive } from 'vue';
+ import { reactive,onMounted , getCurrentInstance } from 'vue';
 import {useRouter} from 'vue-router'
 import getAssetsFile from '../../../utils/pub-use'
 const router=useRouter()
@@ -25,12 +25,27 @@ const ulList=reactive([
 {tittle:'设备信息',com:'/sbxxList',bgc:'/sbxx_img.png',atittle:'Equipment'},
 {tittle:'报警预警信息',com:'/bjxx',bgc:'/bjyjxx_img.png',atittle:'Alarm warning'},
 {tittle:'监测数据查询',com:'/jcshcx',bgc:'/jcsjcx_img.png',atittle:'Monitor data'}])
+let {
+        appContext: {
+          config: { globalProperties: { $dd, $corpId } }
+        }
+      } = getCurrentInstance() 
 const routerClick=(i)=>{ 
   // console.log(i,33);
   router.push(i)
   // router.push('/sbxxList')
 
 }
+onMounted(() => {
+  $dd.ready(function () {
+    $dd.biz.navigation.setTitle({
+    title :'首页',//控制标题文本，空字符串表示显示默认文本
+    onSuccess : function(result) {
+    },
+    onFail : function(err) {}
+});
+      })
+})
  </script>
 <style lang="scss" scoped>
 .intro-class{ 

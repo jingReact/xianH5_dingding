@@ -10,6 +10,7 @@ import Gmap from '@/components/Gmap.vue'
 
 const { appContext: { config: { globalProperties: { $dd } }}} = getCurrentInstance() as ComponentInternalInstance
 const { query } = useRoute()
+
 const lists = ref([
   {color: '#4A9FFFFF', img: '/dy.png', bgc: `linear-gradient(0deg, #DEEEFF 0%, #E4F0FF 100%)`, },
   { color: '#F55662FF', img: '/zd.png', zxzt: '在线', bgc: `linear-gradient(0deg, #FFD6D9 0%, #FFF3F4 100%)`,  },
@@ -123,8 +124,17 @@ const siteInfoM = async (p: any) => {
   }
 }
 onMounted(() => {
+  console.log(query,777888232);
   siteSelectM(query.siteId)
   siteInfoM(query.siteId)
+  $dd.ready(function () {
+    $dd.biz.navigation.setTitle({
+    title :query.siteName,//控制标题文本，空字符串表示显示默认文本
+    onSuccess : function(result) {
+    },
+    onFail : function(err) {}
+});
+      })
 })
 </script>
 <template>

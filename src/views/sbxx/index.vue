@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted,getCurrentInstance, ComponentInternalInstance  } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import SvgIcon from '@/components/svgIcon'
 import { siteList } from '@/api/home'
+const { appContext: { config: { globalProperties: { $dd } } } } = getCurrentInstance() as ComponentInternalInstance
+
 const router = useRouter()
 const { query } = useRoute()
 let keyword = ref()
@@ -25,6 +27,14 @@ function onSearch() {
 onMounted(() => {
   console.log(query, 7788);
   siteListMt({ typeId: query.typeId })
+  $dd.ready(function () {
+    $dd.biz.navigation.setTitle({
+    title : '站点列表',//控制标题文本，空字符串表示显示默认文本
+    onSuccess : function(result) {
+    },
+    onFail : function(err) {}
+});
+      })
 })
 </script>
 

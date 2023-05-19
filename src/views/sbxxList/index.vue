@@ -1,10 +1,11 @@
 <script setup lang="ts">
 // import list from './components/list.vue'
-import { reactive, ref ,onMounted} from 'vue'
+import { reactive, ref ,onMounted,getCurrentInstance, ComponentInternalInstance } from 'vue'
 import { useRouter } from 'vue-router'
 import SvgIcon from '@/components/svgIcon'
 import getAssetsFile from '../../utils/pub-use'
 import { siteCont } from '@/api/home'
+const { appContext: { config: { globalProperties: { $dd } } } } = getCurrentInstance() as ComponentInternalInstance
 
 const router = useRouter()
 let params = reactive({
@@ -37,6 +38,14 @@ let  siteContMth=async (p:any)=>{
 }
 onMounted(() => {
   siteContMth()
+  $dd.ready(function () {
+    $dd.biz.navigation.setTitle({
+    title : '站点信息',//控制标题文本，空字符串表示显示默认文本
+    onSuccess : function(result) {
+    },
+    onFail : function(err) {}
+});
+      })
 })
 </script>
 <template>

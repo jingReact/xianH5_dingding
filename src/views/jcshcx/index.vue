@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted,getCurrentInstance, ComponentInternalInstance  } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import SvgIcon from '@/components/svgIcon'
 import { siterealdata } from '@/api/home'
@@ -14,6 +14,8 @@ const listDate = ref(
     { tittle: '监测时间', data: 'siteName' },
   ]
 );
+const { appContext: { config: { globalProperties: { $dd } } } } = getCurrentInstance() as ComponentInternalInstance
+
 //点击设备详情
 const sbxq = (i:any) => {
   console.log(i);
@@ -54,6 +56,14 @@ function onRefresh() {
 }
 onMounted(() => {
   siteListMt(true)
+  $dd.ready(function () {
+    $dd.biz.navigation.setTitle({
+    title : '检测数据列表',//控制标题文本，空字符串表示显示默认文本
+    onSuccess : function(result) {
+    },
+    onFail : function(err) {}
+});
+      })
 })
 </script>
 <template>
