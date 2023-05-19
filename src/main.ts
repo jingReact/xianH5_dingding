@@ -1,7 +1,8 @@
 import { createApp } from "vue";
+import {createPinia} from 'pinia'
 import App from "./App.vue";
 import router from "./router";
-import store from "./store";
+// import store from "./store";
 import vant from "./plugins/vant";
 import "amfe-flexible";
 import * as dd from 'dingtalk-jsapi'; // 此方式为整体加载，也可按需进行加载
@@ -32,10 +33,12 @@ const apiGetBlogDetailM = async (p:any) => {
     });
 
 }
+const store = createPinia()
 apiGetBlogDetailM(location.href)
 const app = createApp(App);
 app.config.warnHandler = () => null
 app.config.globalProperties.$dd = dd
+app.config.globalProperties.$corpId = 'ding94b03782d8570bd6f2c783f7214b6d69'
 // 按需注入vant组件
 // console.log(initDingH5RemoteDebug(),882222228);
 Object.values(vant).forEach((key) => app.use(key));

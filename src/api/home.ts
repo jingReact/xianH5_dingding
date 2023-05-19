@@ -62,3 +62,8 @@ export const sitehistory = (params?: object) => {
 export const sitehistoryecharts = (params?: object) => {
   return reuest.get(`/newApi/dingDing/site/history/data/echarts`,params);
 };
+
+
+export const login = (params?:string) => {
+  return reuest.get(`/newApi/dingDing/api/login?code=${params}`);
+};

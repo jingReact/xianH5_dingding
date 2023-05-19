@@ -230,8 +230,8 @@ onMounted(() => {
           </van-cell-group>
         </template>
       </van-card>
-      <van-tabs v-model:active="active1" @click-tab="tabsClick">
-        <van-tab title="列表" style="border: red;height: 300px;width: 100%;overflow-y: scroll;overflow-x: hidden;">
+      <van-tabs v-model:active="active1" @click-tab="tabsClick" class="twoList">
+        <van-tab title="列表" style="border: red;height: 500px;width: 100%;overflow-y: scroll;overflow-x: hidden;">
           <van-pull-refresh v-model="ListParams.isLoading" :disabled="ListParams.finished" @refresh="onRefresh">
             <van-list  v-show="!loading" v-model="loading" :finished="ListParams.finished" finished-text="没有更多了" @load="onLoad">
               <van-card v-for="k in historyList" >
@@ -242,8 +242,7 @@ onMounted(() => {
                         <div style="display: flex;justify-content: space-between;padding: 0 20px;">
                           <span v-if="i.tittle" class="bold-t">{{ i.tittle }}</span>
                           <span v-else class="bold-t">{{ k.codeProperty }}</span>
-                          <span> {{ k[i.data] }}
-                          </span>
+                          <span> {{ k[i.data] }} </span>
                           <span v-if="i.tittle == ''"> {{ k.currentValue }}
                           </span>
                         </div>
@@ -265,10 +264,7 @@ onMounted(() => {
   </div>
 </template>
 <style lang="scss" scoped>
-:deep .van-cell {
-  background: #fff;
-  line-height: 50px;
-}
+
 .van-card {
   border-radius: 10px;
   margin: 20px 0px;
@@ -284,7 +280,10 @@ onMounted(() => {
     box-shadow: 0px 2px 10px 0px rgba(18, 18, 18, 0.1);
   }
 }
-
+.van-cell {
+  line-height: 50px;
+  padding: 5px 10px;
+}
 :deep .van-cell__right-icon {
   margin-top: 10px;
 }
@@ -380,7 +379,22 @@ onMounted(() => {
     background:#fff;
     font-weight: bold;
   }
+ 
 }
+
+:deep .twoList{ 
+
+  .van-cell {
+    background: #F1F6FF;
+  line-height: 50px;
+}
+
+.van-card{ 
+// :nth-child(1){ 
+//   background: red;
+// }
+}
+ }
 .zxlx {
   margin: 5px -5px 0 0;
   display: inline-block;

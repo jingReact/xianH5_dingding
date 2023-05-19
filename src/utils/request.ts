@@ -1,6 +1,8 @@
+
 import axios from "axios";
 import qs from "qs";
 import { Toast } from "vant";
+import  {Setstorage} from '@/utils/token'
 
 interface responseStatus {
   readonly status: number;
@@ -16,7 +18,15 @@ interface responseCode {
 axios.defaults.withCredentials = true;
 // 发送时
 axios.interceptors.request.use(
-  (config) => config,
+  
+  (config) => { 
+    console.log(Setstorage.get('token'),'Setstorage');
+    if (Setstorage.get('token')) {
+      config.headers.Authorization = Setstorage.get('token');
+    }
+    return config
+
+  },
   (err) => Promise.reject(err)
 );
 
