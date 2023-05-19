@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import LabelSelect from './components/labelSelect.vue'
 import { reactive, ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import SvgIcon from '@/components/svgIcon'

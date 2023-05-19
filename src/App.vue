@@ -19,8 +19,6 @@ export default defineComponent({
   name: 'App',
   setup() {
     const store = useStore()
-    const getLabelList = () => store.dispatch('label/getLabelList')
-    getLabelList()
     onMounted(() => {
       let {
         appContext: {
