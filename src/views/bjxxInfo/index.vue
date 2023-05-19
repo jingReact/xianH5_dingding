@@ -93,9 +93,8 @@ onMounted(() => {
       <van-cell :title="i.tittle">
         <div bindtap="open">{{ projectInfo[i.data] }}
           <span :class="{ 'pclass': true, 'nopclass': projectInfo.warningState == 2 }"
-            v-if="i.data == 'siteName'">{{ projectInfo.warningState == 1 ? '报警中' : '预警中' }}</span>
+            v-if="i.data == 'siteName'">{{ projectInfo.warningState == 1 ? '报警中' : '已失效' }}</span>
         </div>
-
       </van-cell>
     </van-cell-group>
     <van-loading style="text-align: center;line-height: 150px;" size="24px" v-show="loading">加载中...</van-loading>

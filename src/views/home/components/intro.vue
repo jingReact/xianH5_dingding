@@ -4,7 +4,6 @@
         <div class="tittle" >  西咸机场海绵系统</div>
         <van-divider />
          </div>
-
        <div class="intro-container"  :class="{'mag_top':index==0}"  v-for="i,index in ulList" :key="i.img" >
        <div class="conrtent">
         <div class="tittle" :class="{'tittle_hm':!i.atittle}" >  {{ i.tittle }} </div>
