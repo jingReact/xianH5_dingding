@@ -85,6 +85,7 @@ const sbxq = (i:any) => {
 //切换 下方位置
 const onConfirm = ({ text, value }) => {
   showPicker.value = false;
+  loading.value = true
   fieldValue.value = text
   queryParams.value.codeAscii = value
   siteSelectechatM(queryParams.value)
@@ -198,21 +199,6 @@ onMounted(() => {
         &::placeholder {
           color: $disableFontColor;
         }
-      }
-    }
-  }
-
-  :deep(.van-tabs) {
-    .van-tabs__wrap {
-      position: fixed;
-      top: 90px;
-      width: 100vw;
-      height: 44px;
-      z-index: 99;
-      background-color: #fff;
-
-      &::after {
-        @include borderZeroPointFive();
       }
     }
   }
