@@ -22,7 +22,7 @@ axios.interceptors.request.use(
   (config) => { 
     console.log(Setstorage.get('token'),'Setstorage');
     if (Setstorage.get('token')) {
-      config.headers.Authorization = Setstorage.get('token');
+      config.headers.token = Setstorage.get('token');
     }
     return config
 

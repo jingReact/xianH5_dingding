@@ -23,7 +23,7 @@ export default defineComponent({
           onSuccess: function ({ code }) {
             login(code).then(({ data }) => {
               console.log(data, 11999);
-              Setstorage.set('token', 'Bearer ' + data.token)
+              Setstorage.set('token',data.token)
             })
           },
           onFail: function (err) { }
