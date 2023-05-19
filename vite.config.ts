@@ -27,7 +27,30 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       vue(),
       vueJsx(),
       legacy({
-        targets: ["defaults", "not IE 11"],
+           //targets: ["defaults", "not IE 11"],
+      targets: ['chrome 63'],
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      modernPolyfills: true,
+      renderLegacyChunks: true,
+      polyfills: [
+        'es.symbol',
+        'es.promise',
+        'es.promise.finally',
+        'es/map',
+        'es/set',
+        'es.array.filter',
+        'es.array.for-each',
+        'es.array.flat-map',
+        'es.object.define-properties',
+        'es.object.define-property',
+        'es.object.get-own-property-descriptor',
+        'es.object.get-own-property-descriptors',
+        'es.object.keys',
+        'es.object.to-string',
+        'web.dom-collections.for-each',
+        'esnext.global-this',
+        'esnext.string.match-all'
+      ]
       }),
       styleImport({
         // 手动导入组件
@@ -48,7 +71,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       },
     },
     build: {
-      target: "modules",
+      target: "es2015",
       polyfillModulePreload: true,
       outDir: "dist",
       assetsDir: "static",

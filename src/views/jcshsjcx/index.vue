@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { getCurrentInstance, ComponentInternalInstance } from 'vue'
 import { reactive, ref, onMounted } from 'vue'
 import * as echarts from 'echarts';
