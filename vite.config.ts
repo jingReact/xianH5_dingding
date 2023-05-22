@@ -83,7 +83,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
     },
     server: {
       host: "0.0.0.0",
-      port: 8099, // 设置服务启动端口号
+      port: 8088, // 设置服务启动端口号
       open: true,
       cors: true, // 允许跨域
       // 设置代理，根据项目实际情况配置

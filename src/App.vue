@@ -1,3 +1,4 @@
+
 <template>
   <router-view #="{ Component }">
     <component :is="Component" />
@@ -27,7 +28,6 @@ export default defineComponent({
             })
           },
           onFail: function (err) { }
-
         })
       })
 
