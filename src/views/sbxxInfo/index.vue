@@ -176,46 +176,23 @@ onMounted(() => {
     <van-cell-group class="time">
       <van-cell title="结束时间" is-link :label="queryParams.endTime" @click="sbxq(2)" />
     </van-cell-group>
+    <div class="echarts" >
     <van-loading style="text-align: center;line-height: 150px;" size="24px" v-show="loading">加载中...</van-loading>
     <div v-show="!loading && isShow.length > 0" id="main" style="width: 400px ;height: 240px;"></div>
     <div v-show="loading || isShow.length == 0"
-      style="width: 400px;color: #dfdedf ;height: 240px;text-align: center;font-size: 14px;line-height: 200px;">暂无数据</div>
+      style="width: 100%;color: #dfdedf ;height: 240px;text-align: center;font-size: 14px;line-height: 200px;">暂无数据</div>
+    </div>
+
   </div>
 </template>
 
 <style lang="scss" scoped>
 .app-container {
-  padding: 200px 10px;
-  height: calc(100% - 200px);
-  .search {
-    height: 100px;
-  }
-
-  .van-search {
-    padding: 12px 16px 0;
-    position: fixed;
-    top: 0;
-    width: 100vw;
-    height: 46px;
-    z-index: 99;
-    background-color: #fff;
-
-    :deep(.van-search__content) {
-      border-radius: 16px;
-
-      input {
-        color: $strongFontColor;
-
-        &::placeholder {
-          color: $disableFontColor;
-        }
-      }
-    }
-  }
+  padding:  200px  10px   0  10px;
+  height: calc(100% - 500px);
 }
-
 .van-card {
-  height: 80px;
+  height: 70px;
   box-shadow: 0px 2px 30px 0px rgba(18, 18, 18, 0.1);
   border-radius: 10px;
   margin: 10px 0px;
@@ -229,13 +206,6 @@ onMounted(() => {
   width: 330px;
 }
 
-.status {
-  text-align: right;
-  position: absolute;
-  bottom: 10px;
-  width: 80px;
-  margin-left: 80px;
-}
 
 .van-cell {
   height: 45px;
@@ -252,4 +222,5 @@ onMounted(() => {
   }
 
 }
+
 </style>

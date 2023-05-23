@@ -47,7 +47,7 @@ const sbxq = (i: any) => {
         } else {
           queryParams.value.endTime = value
         }
-       loading.value = true
+        loading.value = true
         sitehistoryM(false)
       },
       onFail: (err) => { }
@@ -80,7 +80,6 @@ const onConfirm = ({ text, value }) => {
   loading.value = true
   queryParams.value.codeAscii = value
   sitehistoryM(false)
-  // sitehistoryechartsM(queryParams.value)
 };
 //获取下拉因子列表
 const siteSelectM = async (p: any) => {
@@ -89,15 +88,19 @@ const siteSelectM = async (p: any) => {
   data.forEach(i => {
     columns.value.push({ text: i.name, value: i.codeAscll })
   });
-  let ar = data[0]
-  fieldValue.value = ar.name
-  queryParams.value.codeAscii = ar.codeAscll
-  sitehistoryM(false)
-  // sitehistoryechartsM(queryParams.value)
-
+  if (data.length > 0) {
+    let ar = data[0]
+    fieldValue.value = ar.name
+    queryParams.value.codeAscii = ar.codeAscll
+    sitehistoryM(false)
+  }
+  else {
+    loading.value = false
+    ListParams.value.finished = true
+  }
 }
 //echarts
-let loading= ref(true)
+let loading = ref(true)
 const initMths = (p, m) => {
   loading.value = false
   let xDate = p
@@ -136,60 +139,56 @@ const initMths = (p, m) => {
 //监测数据-分页查询站点单个因子的历史监测信息列表
 let historyList = ref([])
 let isHistory = ref(false)
-// startTime: nowDats()
 let queryParams = ref({ pageSize: 10, pageNum: 1, siteId: query.siteId, codeAscii: '', startTime: '2012-02-12', endTime: threeDats() })
 const sitehistoryM = async (isRefresh) => {
-  let { data,total } = await sitehistory(queryParams.value)
-  historyList.value = data
+  let { data, total } = await sitehistory(queryParams.value)
   isHistory.value = true
   loading.value = false
   if (isRefresh) {//下拉刷新
-    isHistory.value = [...data, ...isHistory.value]
+    historyList.value = [...data, ...historyList.value]
     ListParams.value.isLoading = false
   } else {//上拉加载
-    if (total < isHistory.value.length) {
-      isHistory.value = [...isHistory.value, ...data]
+    if (total > historyList.value.length) {
+      historyList.value = [...historyList.value, ...data]
       ListParams.value.loading = false
     } else {
+      historyList.value = data
       ListParams.value.finished = true
     }
   }
   if (data.length === 0) {// 证明没有下一页数据了
     ListParams.value.finished = true
   }
-
 }
-
 const sitehistoryechartsM = async (p: object) => {
   let { data: { timeList, dataList }, code } = await sitehistoryecharts(p)
   if (code == 200) {
     initMths(timeList, dataList)
   }
 }
-function tabsClick ({name}) {
-console.log(name,22);
-if(name==1){ 
-  loading.value = true
-  sitehistoryechartsM(queryParams.value)
-}
-
+function tabsClick({ name }) {
+  console.log(name, 22);
+  if (name == 1) {
+    loading.value = true
+    sitehistoryechartsM(queryParams.value)
+  }
 }
 onMounted(() => {
   siteListMt(true)
   siteSelectM(query.siteId)
   $dd.ready(function () {
     $dd.biz.navigation.setTitle({
-    title : '数据查询',//控制标题文本，空字符串表示显示默认文本
-    onSuccess : function(result) {
-    },
-    onFail : function(err) {}
-});
-      })
+      title: '数据查询',//控制标题文本，空字符串表示显示默认文本
+      onSuccess: function (result) {
+      },
+      onFail: function (err) { }
+    });
+  })
 })
 </script>
 <template>
   <div class="app-container">
-    <van-tabs v-model:active="active" animated >
+    <van-tabs v-model:active="active" animated>
       <van-tab v-for="i in tabslist" :title="i.tittle">
         <div v-if="active == 0">
           <van-card>
@@ -220,7 +219,6 @@ onMounted(() => {
             </template>
           </van-card>
         </div>
-
       </van-tab>
     </van-tabs>
     <div v-if="active == 1" class="two">
@@ -241,8 +239,9 @@ onMounted(() => {
       <van-tabs v-model:active="active1" @click-tab="tabsClick" class="twoList">
         <van-tab title="列表" style="border: red;height: 500px;width: 100%;overflow-y: scroll;overflow-x: hidden;">
           <van-pull-refresh v-model="ListParams.isLoading" :disabled="ListParams.finished" @refresh="onRefresh">
-            <van-list  v-show="!loading" v-model="loading" :finished="ListParams.finished" finished-text="没有更多了" @load="onLoad">
-              <van-card v-for="k in historyList" >
+            <van-list v-show="!loading" v-model="loading" :finished="ListParams.finished" finished-text="没有更多了"
+              @load="onLoad">
+              <van-card v-for="k in historyList">
                 <template #thumb>
                   <van-cell-group v-for="i in listDate1" span="24" style="margin: 10px 0;" v-if="isHistory">
                     <van-cell>
@@ -272,7 +271,6 @@ onMounted(() => {
   </div>
 </template>
 <style lang="scss" scoped>
-
 .van-card {
   border-radius: 10px;
   margin: 20px 0px;
@@ -288,10 +286,12 @@ onMounted(() => {
     box-shadow: 0px 2px 10px 0px rgba(18, 18, 18, 0.1);
   }
 }
+
 .van-cell {
   line-height: 50px;
   padding: 5px 10px;
 }
+
 :deep .van-cell__right-icon {
   margin-top: 10px;
 }
@@ -373,36 +373,40 @@ onMounted(() => {
   .van-tab--active {
     color: #278DFFFF;
     font-weight: bold;
+    font-size: 20px;
   }
 
   .van-tabs__line {
     background-color: #278DFFFF;
   }
 }
-:deep .two{ 
+
+:deep .two {
   .van-tab {
-    background: linear-gradient(0deg, rgba(210,225,255,0) 0%, #D2E1FF 100%);
+    background: linear-gradient(0deg, rgba(210, 225, 255, 0) 0%, #D2E1FF 100%);
   }
+
   .van-tab--active {
-    background:#fff;
+    background: #fff;
     font-weight: bold;
   }
- 
+
 }
 
-:deep .twoList{ 
+:deep .twoList {
 
   .van-cell {
     background: #F1F6FF;
-  line-height: 50px;
+    line-height: 50px;
+  }
+
+  .van-card {
+    // :nth-child(1){ 
+    //   background: red;
+    // }
+  }
 }
 
-.van-card{ 
-// :nth-child(1){ 
-//   background: red;
-// }
-}
- }
 .zxlx {
   margin: 5px -5px 0 0;
   display: inline-block;
@@ -418,4 +422,5 @@ onMounted(() => {
 .lx {
   background: #F1F1F1;
   color: #666666FF;
-}</style>
+}
+</style>

@@ -50,7 +50,7 @@ export default defineComponent({
                     title: this.data.siteName
                 });
                 marker.setLabel({//label默认蓝框白底左上角显示，样式className为：amap-marker-label
-                    offset: new AMap.Pixel(10, -25),//修改label相对于maker的位置
+                    offset: new AMap.Pixel(5, -10),//修改label相对于maker的位置
                     content: this.data.siteName,
                     color: 'red'
                 });

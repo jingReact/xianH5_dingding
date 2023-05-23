@@ -41,7 +41,7 @@ const siteSelectM = async (p: string) => {
   fieldValue.value = ar.name
 }
 function liClick({ name }) {
-  // console.log(c,44);
+  WarningList.value=[]
   liShow.value = name + 1
   ListParams.value.type = name + 1
   alarmWarningListM()
@@ -57,23 +57,26 @@ const alarmWarningContM = async (p: string) => {
 let ListParams = ref({ siteId: '', pageNum: 1, pageSize: 10, type: 1, loading: true, finished: false, isLoading: false })
 const alarmWarningListM = async (isRefresh) => {
   let { data, code, total } = await alarmWarningList(ListParams.value)
+  // WarningList.value=data
   if (code == 200) {
-    WarningList.value = data
     if (isRefresh) {//下拉刷新
       WarningList.value = [...data, ...WarningList.value]
-      ListParams.value.isLoading = false
-    } else {//上拉加载
-      if (total < WarningList.value.length) {
-        WarningList.value = [...WarningList.value, ...data]
-        ListParams.value.loading = false
-      } else {
-        ListParams.value.finished = true
-      }
-    }
-    if (data.length === 0) {// 证明没有下一页数据了
+    ListParams.value.isLoading = false
+  } else {//上拉加载
+    if (total > WarningList.value.length) {
+      WarningList.value = [...WarningList.value, ...data]
+      ListParams.value.loading = false
+      ListParams.value.finished = true
+
+    } else {
+        WarningList.value=data
       ListParams.value.finished = true
     }
   }
+  if (data.length === 0) {// 证明没有下一页数据了
+    ListParams.value.finished = true
+  }
+}
 }
 // 上拉加载
 function onLoad() {
@@ -82,15 +85,16 @@ function onLoad() {
 }
 // 下拉刷新
 function onRefresh() {
-  ListParams.value.pageNum++
-  alarmWarningListM()
+  ListParams.value.loading = true
+  ListParams.value.pageNum ++
+  alarmWarningListM(true)
 }
 function infoClick(i) {
   router.push({ path: '/bjxxInfo', query: i })
 }
 onMounted(() => {
   siteSelectM()
-  alarmWarningContM()
+  alarmWarningContM(true)
   $dd.ready(function () {
     $dd.biz.navigation.setTitle({
       title: '站点报警预警信息',//控制标题文本，空字符串表示显示默认文本
@@ -152,7 +156,8 @@ onMounted(() => {
       <van-tab v-for="i in tabslist" :title="i.tittle">
         <van-field v-model="fieldValue" is-link readonly label="站点列表" placeholder="选择站点下拉列表" @click="showPicker = true" />
         <van-pull-refresh v-model="ListParams.isLoading" :disabled="ListParams.finished" @refresh="onRefresh">
-          <van-list v-model="loading" :finished="ListParams.finished" finished-text="没有更多了" @load="onLoad">
+      <van-list v-model="ListParams.loading" :finished="ListParams.finished" :immediate-check="false"
+        finished-text="没有更多了" @load="onLoad" :offset="10">
             <div class="bjswxx" :class="{ 'bgc': i?.warningState == 1 }" v-for="i in WarningList" @click="infoClick(i)">
               <div class="one" :class="{ 'bgc1': i?.warningState == 1 }">
                 <div class="zd">

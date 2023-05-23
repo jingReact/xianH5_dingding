@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted,getCurrentInstance, ComponentInternalInstance  } from 'vue'
+import { reactive, ref, onMounted, getCurrentInstance, ComponentInternalInstance } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import SvgIcon from '@/components/svgIcon'
 import { siterealdata } from '@/api/home'
@@ -8,30 +8,24 @@ const { query } = useRoute()
 let keyword = ref()
 const lists = ref([
 ]);
-const listDate = ref(
-  [
-    { tittle: '站点编号', data: 'siteNo' },
-    { tittle: '监测时间', data: 'siteName' },
-  ]
-);
 const { appContext: { config: { globalProperties: { $dd } } } } = getCurrentInstance() as ComponentInternalInstance
-
 //点击设备详情
-const sbxq = (i:any) => {
+const sbxq = (i: any) => {
   console.log(i);
   router.push({ path: '/jcshsjcx', query: i })
 }
 //获取设备列表
-const siteListMt = async (isRefresh:any) => {
-  let { data, total:number } = await siterealdata({ typeId: query.typeId, keyword: keyword.value })
-  lists.value = data
+const siteListMt = async (isRefresh: boolean) => {
+  let { data, total } = await siterealdata(ListParams.value)
   if (isRefresh) {//下拉刷新
     lists.value = [...data, ...lists.value]
     ListParams.value.isLoading = false
   } else {//上拉加载
-    if (total < lists.value.length) {
+    if (total > lists.value.length) {
       lists.value = [...lists.value, ...data]
       ListParams.value.loading = false
+      ListParams.value.finished = true
+
     } else {
       ListParams.value.finished = true
     }
@@ -40,30 +34,32 @@ const siteListMt = async (isRefresh:any) => {
     ListParams.value.finished = true
   }
 }
+//搜索
 function onSearch() {
-  siteListMt(true)
+  siteListMt()
 }
-let ListParams = ref({ siteId: '', pageNum: 1, pageSize: 10, type: 1, loading: true, finished: false, isLoading: false })
+let ListParams = ref({ pageNum: 1, pageSize: 10, loading: true, finished: false, isLoading: false })
 // 上拉加载
 function onLoad() {
   ListParams.value.pageNum++
-  siteListMt(true)
+  siteListMt()
 }
 // 下拉刷新
 function onRefresh() {
-  ListParams.value.pageNum++
+  ListParams.value.loading = true
+  ListParams.value.pageNum = 1
   siteListMt(true)
 }
 onMounted(() => {
   siteListMt(true)
   $dd.ready(function () {
     $dd.biz.navigation.setTitle({
-    title : '检测数据列表',//控制标题文本，空字符串表示显示默认文本
-    onSuccess : function(result) {
-    },
-    onFail : function(err) {}
-});
-      })
+      title: '检测数据列表',//控制标题文本，空字符串表示显示默认文本
+      onSuccess: function (result) {
+      },
+      onFail: function (err) { }
+    });
+  })
 })
 </script>
 <template>
@@ -75,14 +71,15 @@ onMounted(() => {
       </form>
     </div>
     <van-pull-refresh v-model="ListParams.isLoading" :disabled="ListParams.finished" @refresh="onRefresh">
-      <van-list v-model="loading" :finished="ListParams.finished" finished-text="没有更多了" @load="onLoad">
-        <van-card v-for="i in lists" @click="sbxq(i)" >
+      <van-list v-model="ListParams.loading" :finished="ListParams.finished" :immediate-check="false"
+        finished-text="没有更多了" @load="onLoad" :offset="10">
+        <van-card v-for="i in lists" @click="sbxq(i)">
           <template #thumb>
             <van-cell-group span="24" style="margin: 10px 0;background: red;">
               <van-cell :title-class="{ 'zdimg': true }">
                 <template #title>
-                  <div style="display: flex;align-items: center;">
-                    <img style="height: 20px;padding: 10px 15px;" src="../../assets/images/站点.png" alt="">
+                  <div style="display: flex;align-items: center;margin-left: 12px;">
+                    <img style="height: 20px;padding: 10px 5px" src="../../assets/images/站点.png" alt="">
                     <span style="font-weight: bold;font-size: 18px;" class="custom-title">{{ i['siteName'] }}</span>
                   </div>
                 </template>
@@ -133,15 +130,16 @@ onMounted(() => {
   }
 
   .van-search {
-    padding: 12px 16px 0;
+    padding: 12px 0px 0 0;
     position: fixed;
     top: 0;
-    width: 100vw;
+    width: 95%;
     height: 46px;
     z-index: 99;
-    background-color: #fff;
+
     :deep(.van-search__content) {
       border-radius: 16px;
+
       input {
         color: $strongFontColor;
 
@@ -151,6 +149,7 @@ onMounted(() => {
       }
     }
   }
+
   :deep(.van-tabs) {
     .van-tabs__wrap {
       position: fixed;
@@ -159,34 +158,28 @@ onMounted(() => {
       height: 44px;
       z-index: 99;
       background-color: #fff;
+
       &::after {
         @include borderZeroPointFive();
       }
     }
   }
 }
-:deep .van-cell { 
-  background: #fff;
-}
+
 .van-card {
   border-radius: 10px;
   margin: 20px 0px;
   width: 100%;
+
   :deep .van-card__thumb {
     height: auto;
     width: 100% !important;
     overflow: hidden;
-      background-color: #fff;
-      box-shadow: 0px 2px 10px 0px rgba(18,18,18,0.1);
+    background-color: #fff;
+    box-shadow: 0px 2px 10px 0px rgba(18, 18, 18, 0.1);
   }
 }
-.status {
-  text-align: right;
-  position: absolute;
-  bottom: 10px;
-  width: 80px;
-  margin-left: 80px;
-}
+
 .zxlx {
   margin: 5px 5px 0 0;
   display: inline-block;
@@ -198,14 +191,14 @@ onMounted(() => {
   text-align: center;
   color: #6BBE4EFF;
 }
+
 .lx {
   background: #F1F1F1;
   color: #666666FF;
 }
+
 .bold-t {
   font-weight: bold;
   font-size: 12px;
   padding-bottom: 2px;
-}
-
-</style>
+}</style>

@@ -46,8 +46,8 @@ export const sitemonitor = (params?: string) => {
   return reuest.get(`/newApi/dingDing/site/monitor/data/${params}`);
 };
 
-export const siterealdata = () => {
-  return reuest.get(`/newApi/dingDing/site/real/data/list`);
+export const siterealdata = (params?:object) => {
+  return reuest.get(`/newApi/dingDing/site/real/data/list`,params);
 };
 
 

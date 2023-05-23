@@ -24,6 +24,19 @@ const siteListMt = async (p: any) => {
 function onSearch() {
   siteListMt({ typeId: query.typeId, keyword: keyword.value })
 }
+
+let ListParams = ref({typeId: query.typeId , pageNum: 1, pageSize: 10, loading: true, finished: false, isLoading: false })
+// 上拉加载
+function onLoad() {
+  ListParams.value.pageNum++
+  siteListMt(true)
+}
+// 下拉刷新
+function onRefresh() {
+  ListParams.value.loading = true
+  ListParams.value.pageNum = 1
+  siteListMt(true)
+}
 onMounted(() => {
   console.log(query, 7788);
   siteListMt({ typeId: query.typeId })
@@ -37,7 +50,6 @@ onMounted(() => {
       })
 })
 </script>
-
 <template>
   <div class="app-container">
     <div class="search">
@@ -46,6 +58,9 @@ onMounted(() => {
           placeholder="请输入站点名称" @search="onSearch" @cancel="() => (params.keyword = '')" />
       </form>
     </div>
+    <!-- <van-pull-refresh v-model="ListParams.isLoading" :disabled="ListParams.finished" @refresh="onRefresh">
+      <van-list v-model="ListParams.loading" :finished="ListParams.finished" :immediate-check="false"
+        finished-text="没有更多了" @load="onLoad" :offset="10"> -->
     <van-row gutter="20">
       <van-col v-for="i in lists" span="12" @click="sbxq(i)">
         <van-card>
@@ -62,6 +77,8 @@ onMounted(() => {
         </van-card>
       </van-col>
     </van-row>
+    <!-- </van-list>
+    </van-pull-refresh> -->
   </div>
 </template>
 
@@ -70,46 +87,21 @@ onMounted(() => {
   padding: 0 10px;
 
   .search {
-    height: 100px;
+    height: 50px;
   }
-
   .van-search {
-    padding: 12px 16px 0;
+    padding: 12px 0px 0;
     position: fixed;
     top: 0;
-    width: 100vw;
+    width: 95%;
     height: 46px;
     z-index: 99;
     background-color: #fff;
-
     :deep(.van-search__content) {
       border-radius: 16px;
-
-      input {
-        color: $strongFontColor;
-
-        &::placeholder {
-          color: $disableFontColor;
-        }
-      }
     }
   }
-  // :deep(.van-tabs) {
-  //   .van-tabs__wrap {
-  //     position: fixed;
-  //     top: 90px;
-  //     width: 100vw;
-  //     height: 44px;
-  //     z-index: 99;
-  //     background-color: #fff;
-
-  //     &::after {
-  //       @include borderZeroPointFive();
-  //     }
-  //   }
-  // }
 }
-
 .van-card {
   height: 80px;
   background: linear-gradient(0deg, #EBF4FF 0%, #FFFFFF 100%);

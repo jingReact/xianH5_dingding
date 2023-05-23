@@ -27,30 +27,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       vue(),
       vueJsx(),
       legacy({
-           //targets: ["defaults", "not IE 11"],
-      targets: ['chrome 63'],
-      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
-      modernPolyfills: true,
-      renderLegacyChunks: true,
-      polyfills: [
-        'es.symbol',
-        'es.promise',
-        'es.promise.finally',
-        'es/map',
-        'es/set',
-        'es.array.filter',
-        'es.array.for-each',
-        'es.array.flat-map',
-        'es.object.define-properties',
-        'es.object.define-property',
-        'es.object.get-own-property-descriptor',
-        'es.object.get-own-property-descriptors',
-        'es.object.keys',
-        'es.object.to-string',
-        'web.dom-collections.for-each',
-        'esnext.global-this',
-        'esnext.string.match-all'
-      ]
+        targets: ["defaults", "not IE 11"],
       }),
       styleImport({
         // 手动导入组件
@@ -71,7 +48,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       },
     },
     build: {
-      target: "es2015",
+      target: "modules",
       polyfillModulePreload: true,
       outDir: "dist",
       assetsDir: "static",
@@ -83,7 +60,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
     },
     server: {
       host: "0.0.0.0",
-      port: 8088, // 设置服务启动端口号
+      port: 8099, // 设置服务启动端口号
       open: true,
       cors: true, // 允许跨域
       // 设置代理，根据项目实际情况配置
