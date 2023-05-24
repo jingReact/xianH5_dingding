@@ -38,7 +38,8 @@ function onRefresh() {
   siteListMt(true)
 }
 onMounted(() => {
-  console.log(query, 7788);
+  // console.log(query, 7788);
+  // siteListMt({ typeId: query.typeId })
   siteListMt({ typeId: query.typeId })
   $dd.ready(function () {
     $dd.biz.navigation.setTitle({

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 // import list from './components/list.vue'
-import { reactive, ref ,onMounted,getCurrentInstance, ComponentInternalInstance } from 'vue'
+import { reactive, ref, onMounted, getCurrentInstance, ComponentInternalInstance } from 'vue'
 import { useRouter } from 'vue-router'
 import SvgIcon from '@/components/svgIcon'
 import getAssetsFile from '../../utils/pub-use'
 import { siteCont } from '@/api/home'
+import {lists} from './data'
 const { appContext: { config: { globalProperties: { $dd } } } } = getCurrentInstance() as ComponentInternalInstance
 
 const router = useRouter()
@@ -14,57 +15,46 @@ let params = reactive({
   type: '',
   isMobile: true,
 })
-const lists = ref([
-{ 'projectName': '雨情监测', img: '/yqjc_icon.png', icon: '', zt: 1 },
-  { 'projectName': '河道水质监测', img: '/hdsz_icon.png', zxzt: '在线', icon: '', zt: 0 },
-  { 'projectName': '管网水质监测', img: '/gwsz_icon.png', zxzt: '在线', icon: '', zt: 1 },
-  { 'projectName': '管网流量监测', img: '/gwll_icon.png', zxzt: '在线', icon: '', zt: 0 },
-  { 'projectName': '内涝点监测', img: '/nld_icon.png', zxzt: '在线', icon: '', zt: 0 },
-  { 'projectName': '溢流口监测', img: '/xxx.png', zxzt: '在线', icon: '', color: 1 },
-  { 'projectName': '水环境', img: '/shj_icon.png', zxzt: '在线', icon: '', zt: 0 },
-  { 'projectName': '污水泵站', img: '/sss.png', zxzt: '在线', icon: '', zt: 0 },
-  { 'projectName': '雨水泵站', img: '/ysbz_icon.png', zxzt: '在线', icon: '', zt: 0 },
-]);
 //点击设备详情
-const sbxq = (i:any) => {
-  router.push({path:'/sbxx',query:i})
+const sbxq = (i) => {
+  console.log(i, 7777);
+  router.push({ path: '/sbxx', query: i })
 }
 //设备信息接口
-let listData=ref()
-let  siteContMth=async (p:any)=>{ 
-    let {code,data}=await siteCont(p)
-    console.log(code,data);
-    listData.value=data
+let listData = ref()
+let siteContMth = async (p: any) => {
+  let { code, data } = await siteCont(p)
+  listData.value = data
 }
 onMounted(() => {
   siteContMth()
   $dd.ready(function () {
     $dd.biz.navigation.setTitle({
-    title : '站点信息',//控制标题文本，空字符串表示显示默认文本
-    onSuccess : function(result) {
-    },
-    onFail : function(err) {}
-});
-      })
+      title: '站点信息',//控制标题文本，空字符串表示显示默认文本
+      onSuccess: function (result) {
+      },
+      onFail: function (err) { }
+    });
+  })
 })
 </script>
 <template>
   <div class="app-container">
-  <van-row gutter="20"> 
-      <van-col v-for="i,index in listData" :span="12"  @click="sbxq(i)"> 
-     <van-card> 
-          <template #thumb> 
-            <div class="card" >
-              <img :src="getAssetsFile(lists[index].img)" />
-            <div style="margin-left: 10px;">
-              <div>{{ i.countNum }}</div>
-              <div class="typeClass">{{ i.typeName }}</div>
+    <van-row gutter="20">
+      <van-col v-for="(i, index) in listData" :span="12" @click="sbxq(i)">
+        <van-card>
+          <template #thumb>
+            <div class="card">
+              <img :src="getAssetsFile(lists[index]?.img ? lists[index]?.img :lists[Math.floor(Math.random()*10+1)]?.img)" />
+              <div style="margin-left: 10px;">
+                <div>{{ i.countNum }}</div>
+                <div class="typeClass">{{ i.typeName }}</div>
               </div>
             </div>
-         </template> 
-       </van-card> 
-     </van-col> 
-   </van-row> 
+          </template>
+        </van-card>
+      </van-col>
+    </van-row>
   </div>
 </template>
 
@@ -77,16 +67,18 @@ onMounted(() => {
   .search {
     height: 100px;
   }
-  .typeClass{ 
-          width: 80px;
-					font-family: PingFang SC;
-					font-weight: 500;
-					color: #7B7B7E;
-					white-space: nowrap;
-					overflow: auto;
-					text-align: left;
-          font-size: 15px;
+
+  .typeClass {
+    width: 80px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #7B7B7E;
+    white-space: nowrap;
+    overflow: auto;
+    text-align: left;
+    font-size: 15px;
   }
+
   .van-search {
     padding: 12px 16px 0;
     position: fixed;

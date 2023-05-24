@@ -19,7 +19,6 @@
 import { reactive, onMounted, getCurrentInstance } from 'vue';
 import { useRouter } from 'vue-router'
 import getAssetsFile from '../../utils/pub-use'
-
 const router = useRouter()
 const ulList = reactive([
   { tittle: '设备信息', com: '/sbxxList', bgc: '/sbxx_img.png', atittle: 'Equipment' },
@@ -51,7 +50,6 @@ onMounted(() => {
     height: 80vh;
     overflow: hidden;
     text-align: center;
-  
     .header {
       height: 200px;
       width: 100%;
